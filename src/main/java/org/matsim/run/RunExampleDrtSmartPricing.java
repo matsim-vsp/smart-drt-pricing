@@ -45,28 +45,16 @@ import org.matsim.drtSmartPricing.SmartDrtFareConfigGroup;
 public class RunExampleDrtSmartPricing {
     private static final Logger log = Logger.getLogger(RunExampleDrtSmartPricing.class);
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("test/input/scenario/equil/config.xml", new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new DrtFaresConfigGroup());
-        SwissRailRaptorConfigGroup swissRailRaptorConfigGroup = ConfigUtils.addOrGetModule(config, SwissRailRaptorConfigGroup.class);
-        swissRailRaptorConfigGroup.setUseIntermodalAccessEgress(false);
-        DrtConfigs.adjustMultiModeDrtConfig(ConfigUtils.addOrGetModule(config,MultiModeDrtConfigGroup.class), config.planCalcScore(), config.plansCalcRoute());
 
-        Scenario scenario = DrtControlerCreator.createScenarioWithDrtRouteFactory(config);
-        ScenarioUtils.loadScenario(scenario);
-
-
-        Controler controler = new Controler(scenario);
-        controler.addOverridingModule(new MultiModeDrtModule());
-        controler.addOverridingModule(new DvrpModule());
-        controler.configureQSimComponents(DvrpQSimComponents.activateAllModes(MultiModeDrtConfigGroup.get(controler.getConfig())));
-        controler.addOverridingModule(new DrtFareModule());
-
-        for( Person person : scenario.getPopulation().getPersons().values() ){
-            person.getPlans().removeIf( (plan) -> plan!=person.getSelectedPlan() ) ;
-        }
-
+        // config
+        Config config = ConfigUtils.createConfig();
         ConfigUtils.addOrGetModule(config, SmartDrtFareConfigGroup.class);
+        // scenario
+        Scenario scenario = ScenarioUtils.loadScenario(config);
+        // controler
+        Controler controler = new Controler(scenario);
         controler.addOverridingModule(new SmartDRTFareModule());
-
+        // run
         controler.run();
     }
 }
