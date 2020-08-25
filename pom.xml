@@ -6,7 +6,7 @@
 
     <groupId>org.matsim.vsp</groupId>
     <artifactId>smart-drt-pricing</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>v0.1.0</version>
     <name>smart-drt-pricing Project</name>
     <description>smart-drt-pricing Project</description>
 
