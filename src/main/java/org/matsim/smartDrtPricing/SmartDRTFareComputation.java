@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.drtSmartPricing;
+package org.matsim.smartDrtPricing;
 
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
@@ -37,8 +37,8 @@ import org.matsim.contrib.drt.passenger.events.DrtRequestSubmittedEvent;
 import org.matsim.contrib.drt.passenger.events.DrtRequestSubmittedEventHandler;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.TripRouter;
-import org.matsim.drtSmartPricing.prepare.EstimatePtTrip;
-import org.matsim.drtSmartPricing.prepare.DrtTripInfo;
+import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
+import org.matsim.smartDrtPricing.prepare.DrtTripInfo;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.drtSmartPricing;
+package org.matsim.smartDrtPricing;
 
 import org.matsim.core.config.ReflectiveConfigGroup;
 
@@ -49,9 +49,6 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
         super(GROUP_NAME);
     }
 
-    private double costPerVehPerMeter = 1.079*6.7 / 100 / 1000.;
-    private double costPerVehiclePerSecond = 0.5 /900. ;
-    private double fareTimeBinSize = 129601;
     private String drtMode = "drt";
     private double maxDrtDistance = 40000;
 

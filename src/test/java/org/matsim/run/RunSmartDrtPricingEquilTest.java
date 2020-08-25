@@ -18,8 +18,8 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.drtSmartPricing.SmartDRTFareModule;
-import org.matsim.drtSmartPricing.SmartDrtFareConfigGroup;
+import org.matsim.smartDrtPricing.SmartDRTFareModule;
+import org.matsim.smartDrtPricing.SmartDrtFareConfigGroup;
 import org.matsim.testcases.MatsimTestUtils;
 
 /**

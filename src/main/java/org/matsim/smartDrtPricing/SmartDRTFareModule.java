@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.drtSmartPricing;
+package org.matsim.smartDrtPricing;
 
 import org.matsim.core.controler.AbstractModule;
 

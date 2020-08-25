@@ -19,31 +19,20 @@
 
 package org.matsim.run;
 
-import ch.sbb.matsim.config.SwissRailRaptorConfigGroup;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.population.Person;
-import org.matsim.contrib.av.robotaxi.fares.drt.DrtFareModule;
-import org.matsim.contrib.av.robotaxi.fares.drt.DrtFaresConfigGroup;
-import org.matsim.contrib.drt.run.DrtConfigs;
-import org.matsim.contrib.drt.run.DrtControlerCreator;
-import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
-import org.matsim.contrib.drt.run.MultiModeDrtModule;
-import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
-import org.matsim.contrib.dvrp.run.DvrpModule;
-import org.matsim.contrib.dvrp.run.DvrpQSimComponents;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.drtSmartPricing.SmartDRTFareModule;
-import org.matsim.drtSmartPricing.SmartDrtFareConfigGroup;
+import org.matsim.smartDrtPricing.SmartDRTFareModule;
+import org.matsim.smartDrtPricing.SmartDrtFareConfigGroup;
 
 /**
  * @author : zmeng
  */
-public class RunExampleDrtSmartPricing {
-    private static final Logger log = Logger.getLogger(RunExampleDrtSmartPricing.class);
+public class RunExampleSmartDrtPricing {
+    private static final Logger log = Logger.getLogger(RunExampleSmartDrtPricing.class);
     public static void main(String[] args) {
 
         // config

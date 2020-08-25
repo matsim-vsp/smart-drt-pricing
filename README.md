@@ -1,1 +1,5 @@
 # smart-drt-pricing
+In this study, a DRT pricing strategy based on the quality of public transportation service is proposed. In order to reduce the vicious competition brought by DRT to the public transportation system, and promote DRT to serve the users of private cars more speciﬁcally.
+
+First of all, the service level of public transportation is deﬁned by the ratio of travel time by public transport to travel time by DRT for the same trip.
+By comparing this ratio with the pre-deﬁned thresholds, DRT trips will be charged more due to an excellent public transport service condition (penalty pricing strategy). Whereas, the DRT operator will provide an additional discount as a reward for DRT users, when public transit is hardly an alternative for them, because of an enormous loss of time (reward pricing strategy).

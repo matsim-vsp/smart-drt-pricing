@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.drtSmartPricing.prepare;
+package org.matsim.smartDrtPricing.prepare;
 
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;

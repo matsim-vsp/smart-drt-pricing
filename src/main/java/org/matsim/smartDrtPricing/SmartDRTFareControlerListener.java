@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.drtSmartPricing;
+package org.matsim.smartDrtPricing;
 
 import com.google.inject.Inject;
 import org.matsim.api.core.v01.Scenario;
