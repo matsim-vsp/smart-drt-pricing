@@ -108,7 +108,7 @@ public class EstimatePtTrip {
     }
 
     public EstimatePtTrip updatePtTrips(List<EstimatePtTrip> estimatePtTrips) throws RuntimeException {
-        var filteredTrips = estimatePtTrips.stream().filter(this::isSameTrip).collect(Collectors.toList());
+        List<EstimatePtTrip> filteredTrips = estimatePtTrips.stream().filter(this::isSameTrip).collect(Collectors.toList());
         if (filteredTrips.size() == 0) {
             estimatePtTrips.add(this);
             return this;

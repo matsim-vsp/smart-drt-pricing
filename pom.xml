@@ -15,7 +15,7 @@
         <!--<matsim.version>12.0</matsim.version>-->
 
         <!--weekly "release":-->
-        <matsim.version>13.0-2020w24-SNAPSHOT</matsim.version>
+        <matsim.version>12.0-2020w02-avoev.0</matsim.version>
 
         <!--SNAPSHOT version:-->
         <!-- <matsim.version>13.0-SNAPSHOT</matsim.version> -->
@@ -120,8 +120,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <showWarnings>false</showWarnings>
                     <showDeprecation>false</showDeprecation>
                     <encoding>UTF-8</encoding>

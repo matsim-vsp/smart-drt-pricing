@@ -68,6 +68,11 @@
 				<param name="typicalDuration" value="02:00:00" />
 			</parameterset>
 			<parameterset type="activityParams" >
+				<param name="activityType" value="drt interaction" />
+				<param name="priority" value="1.0" />
+				<param name="scoringThisActivityAtAll" value="false" />
+			</parameterset>
+			<parameterset type="activityParams" >
 				<param name="activityType" value="h" />
 				<param name="typicalDuration" value="12:00:00" />
 			</parameterset>

@@ -116,7 +116,7 @@ public class SmartDRTFareComputation implements DrtRequestSubmittedEventHandler,
                 if (!estimatePtTrip.isHasPtTravelTime()) {
                     estimatePtTrip.setHasPtTravelTime(true);
                     List planElements = tripRouter.calcRoute(TransportMode.pt, estimatePtTrip.getDepartureFacility(), estimatePtTrip.getArrivalFacility(), estimatePtTrip.getDepartureTime(), scenario.getPopulation().getPersons().get(event.getPersonId()));
-                    double ptTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime().seconds()).sum();
+                    double ptTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime()).sum();
                     estimatePtTrip.setPtTravelTime(ptTravelTime);
                     newCalculatedNumOfPtTrips++;
                 }
@@ -140,7 +140,7 @@ public class SmartDRTFareComputation implements DrtRequestSubmittedEventHandler,
                     if (smartDrtFareConfigGroup.hasPenaltyStrategy()) {
                         double penaltyPerMeter = this.smartDrtFareConfigGroup.getPenaltyFactor() * baseDistanceFare * penaltyRatioThreshold / ratio - baseDistanceFare;
                         double penalty = drtTrip.getDrtRequestSubmittedEvent().getUnsharedRideDistance() * penaltyPerMeter;
-                        events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), -penalty, "penalty", "drt"));
+                        events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), -penalty));
                         estimatePtTrip.setPenaltyPerMeter(penaltyPerMeter);
                         estimatePtTrip.setPenalty(penalty);
                         numOfHasPenaltyDrtUsers++;
@@ -150,7 +150,7 @@ public class SmartDRTFareComputation implements DrtRequestSubmittedEventHandler,
                         double rewardPerMeter = Math.min(this.smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare,
                                 this.smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare * (ratio / rewardRatioThreshold - 1));
                         double reward = drtTrip.getDrtRequestSubmittedEvent().getUnsharedRideDistance() * rewardPerMeter;
-                        events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), reward, "reward", "drt"));
+                        events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), reward));
                         estimatePtTrip.setReward(reward);
                         estimatePtTrip.setRewardPerMeter(rewardPerMeter);
                         numOfHasRewardDrtUsers++;
