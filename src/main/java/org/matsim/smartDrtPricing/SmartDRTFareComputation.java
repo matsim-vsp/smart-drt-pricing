@@ -39,6 +39,9 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.TripRouter;
 import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
 import org.matsim.smartDrtPricing.prepare.DrtTripInfo;
+import org.matsim.smartDrtPricing.ratioThreshold.Penalty;
+import org.matsim.smartDrtPricing.ratioThreshold.Reward;
+import org.matsim.smartDrtPricing.ratioThreshold.RatioThresholdCalculator;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -66,6 +69,10 @@ public class SmartDRTFareComputation implements DrtRequestSubmittedEventHandler,
     private SmartDrtFareConfigGroup smartDrtFareConfigGroup;
     @Inject
     private DrtFaresConfigGroup drtFaresConfigGroup;
+    @Inject @Penalty
+    private RatioThresholdCalculator penaltyRatioThresholdCalculator;
+    @Inject @Reward
+    private RatioThresholdCalculator rewardRatioThresholdCalculator;
 
     private int currentIteration;
     private BufferedWriter bw = null;
@@ -124,14 +131,18 @@ public class SmartDRTFareComputation implements DrtRequestSubmittedEventHandler,
                 double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getTotalUnsharedTripTime();
                 estimatePtTrip.setRatio(ratio);
 
-                double disKm;
-                if(estimatePtTrip.getUnsharedDrtDistance() <= this.smartDrtFareConfigGroup.getMaxDrtDistance()){
-                    disKm = estimatePtTrip.getUnsharedDrtDistance() / 1000;
-                } else {
-                    disKm = smartDrtFareConfigGroup.getMaxDrtDistance() / 1000;
-                }
-                double penaltyRatioThreshold = getRatioThreshold(disKm, this.smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorA(), this.smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorB(), this.smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorC(), this.smartDrtFareConfigGroup.getPenaltyRatioThreshold());
-                double rewardRatioThreshold = getRatioThreshold(disKm, this.smartDrtFareConfigGroup.getRewardRatioThresholdFactorA(), this.smartDrtFareConfigGroup.getRewardRatioThresholdFactorB(), this.smartDrtFareConfigGroup.getRewardRatioThresholdFactorC(), this.smartDrtFareConfigGroup.getRewardRatioThreshold());
+                double penaltyRatioThreshold = penaltyRatioThresholdCalculator.calculateRatioThreshold(estimatePtTrip.getDrtTripInfo().getDrtRequestSubmittedEvent().getUnsharedRideDistance(),
+                        this.smartDrtFareConfigGroup.getPenaltyRatioThreshold(),
+                        this.smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorA(),
+                        this.smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorB(),
+                        this.smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorC());
+
+                double rewardRatioThreshold = rewardRatioThresholdCalculator.calculateRatioThreshold(estimatePtTrip.getDrtTripInfo().getDrtRequestSubmittedEvent().getUnsharedRideDistance(),
+                        this.smartDrtFareConfigGroup.getRewardRatioThreshold(),
+                        this.smartDrtFareConfigGroup.getRewardRatioThresholdFactorA(),
+                        this.smartDrtFareConfigGroup.getRewardRatioThresholdFactorB(),
+                        this.smartDrtFareConfigGroup.getRewardRatioThresholdFactorC());
+
                 estimatePtTrip.setPenaltyRatioThreshold(penaltyRatioThreshold);
                 estimatePtTrip.setRewardRatioThreshold(rewardRatioThreshold);
                 double baseDistanceFare = this.drtFaresConfigGroup.getDrtFareConfigGroups().stream().filter(drtFareConfigGroup -> drtFareConfigGroup.getMode().equals(smartDrtFareConfigGroup.getDrtMode())).collect(Collectors.toList()).get(0).getDistanceFare_m();
@@ -164,13 +175,6 @@ public class SmartDRTFareComputation implements DrtRequestSubmittedEventHandler,
             }
         }
 
-    }
-
-    private double getRatioThreshold(double dis_km, double ratioThresholdFactorA, double ratioThresholdFactorB, double ratioThresholdFactorC, double ratioThreshold) {
-        return ratioThresholdFactorA * Math.pow(dis_km, 3) +
-                ratioThresholdFactorB * Math.pow(dis_km, 2) +
-                ratioThresholdFactorC * dis_km +
-                ratioThreshold;
     }
 
     @Override

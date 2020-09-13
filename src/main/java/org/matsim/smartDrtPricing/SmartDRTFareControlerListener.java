@@ -35,8 +35,6 @@ public class SmartDRTFareControlerListener implements IterationEndsListener {
     @Inject
     private SmartDRTFareComputation smartDRTFareComputation;
     @Inject
-    private EventsManager eventsManager;
-    @Inject
     private Scenario scenario;
 
     @Override

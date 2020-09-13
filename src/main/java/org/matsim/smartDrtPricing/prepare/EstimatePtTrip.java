@@ -46,8 +46,6 @@ public class EstimatePtTrip {
     private double penaltyPerMeter;
     private double reward;
     private double rewardPerMeter;
-    private double unsharedDrtTime;
-    private double unsharedDrtDistance;
     private double ratio;
     private double penaltyRatioThreshold;
     private double rewardRatioThreshold;
@@ -137,14 +135,6 @@ public class EstimatePtTrip {
 
     public double getPenaltyPerMeter(){return penaltyPerMeter;}
 
-    public double getUnsharedDrtTime() {
-        return unsharedDrtTime;
-    }
-
-    public void setUnsharedDrtTime(double unsharedDrtTime) {
-        this.unsharedDrtTime = unsharedDrtTime;
-    }
-
     public Id<Link> getDepartureLinkId() {
         return departureLinkId;
     }
@@ -188,10 +178,6 @@ public class EstimatePtTrip {
     public double getArrivalTime() { return arrivalTime; }
 
     public void setArrivalTime(double arrivalTime) { this.arrivalTime = arrivalTime; }
-
-    public double getUnsharedDrtDistance() { return unsharedDrtDistance; }
-
-    public void setUnsharedDrtDistance(double unsharedDrtDistance) { this.unsharedDrtDistance = unsharedDrtDistance; }
 
     public void setRatio(double ratio) { this.ratio = ratio; }
 

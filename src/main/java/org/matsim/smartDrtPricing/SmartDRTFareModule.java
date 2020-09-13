@@ -19,15 +19,32 @@
 
 package org.matsim.smartDrtPricing;
 
+import com.google.inject.Inject;
 import org.matsim.core.controler.AbstractModule;
+import org.matsim.smartDrtPricing.ratioThreshold.*;
 
 /**
  * @author : zmeng
  */
 public class SmartDRTFareModule extends AbstractModule {
+    @Inject
+    SmartDrtFareConfigGroup smartDrtFareConfigGroup;
     @Override
     public void install() {
         this.bind(SmartDRTFareComputation.class).asEagerSingleton();
+
+        if(smartDrtFareConfigGroup.getPenaltyRatioThresholdCalculator().equals(SmartDrtFareConfigGroup.RatioCalculator.poly)){
+            this.bind(RatioThresholdCalculator.class).annotatedWith(Penalty.class).to(PolynomialRatioThresholdCalculator.class);
+        } else if(smartDrtFareConfigGroup.getPenaltyRatioThresholdCalculator().equals(SmartDrtFareConfigGroup.RatioCalculator.exponents)){
+            this.bind(RatioThresholdCalculator.class).annotatedWith(Penalty.class).to(NegativeExponentsRatioThresholdCalculator.class);
+        }
+
+        if(smartDrtFareConfigGroup.getRewardRatioThresholdCalculator().equals(SmartDrtFareConfigGroup.RatioCalculator.poly)){
+            this.bind(RatioThresholdCalculator.class).annotatedWith(Reward.class).to(PolynomialRatioThresholdCalculator.class);
+        } else if(smartDrtFareConfigGroup.getRewardRatioThresholdCalculator().equals(SmartDrtFareConfigGroup.RatioCalculator.exponents)){
+            this.bind(RatioThresholdCalculator.class).annotatedWith(Reward.class).to(NegativeExponentsRatioThresholdCalculator.class);
+        }
+
         addEventHandlerBinding().to(SmartDRTFareComputation.class);
         addControlerListenerBinding().to(SmartDRTFareControlerListener.class);
     }

@@ -31,6 +31,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
 
     private static final String PENALTY_STRATEGY = "penaltyStrategy";
     private static final String PENALTY_FACTOR = "penaltyFactor";
+    private static final String PENALTY_RATIO_THRESHOLD_CALCULATOR = "penaltyRatioThresholdCalculator";
     private static final String PENALTY_RATIO_THRESHOLD = "penaltyRatioThreshold";
     private static final String PENALTY_RATIO_THRESHOLD_FACTOR_A = "penaltyRatioThresholdFactorA";
     private static final String PENALTY_RATIO_THRESHOLD_FACTOR_B = "penaltyRatioThresholdFactorB";
@@ -38,6 +39,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
 
     private static final String REWARD_STRATEGY = "rewardStrategy";
     private static final String REWARD_FACTOR = "rewardFactor";
+    private static final String REWARD_RATIO_THRESHOLD_CALCULATOR = "rewardRatioThresholdCalculator";
     private static final String REWARD_RATIO_THRESHOLD = "rewardRatioThreshold";
     private static final String REWARD_RATIO_THRESHOLD_FACTOR_A = "rewardRatioThresholdFactorA";
     private static final String REWARD_RATIO_THRESHOLD_FACTOR_B = "rewardRatioThresholdFactorB";
@@ -54,19 +56,40 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
 
     private boolean penaltyStrategy = true;
     private double penaltyFactor = 1;
-    private double penaltyRatioThreshold = 2.40349274e+00;
-    private double penaltyRatioThresholdFactorA = -9.12263322e-06;
-    private double penaltyRatioThresholdFactorB = 1.43513764e-03;
+    private RatioCalculator penaltyRatioThresholdCalculator = RatioCalculator.exponents;
+    private double penaltyRatioThreshold = 1.85544918;
+    private double penaltyRatioThresholdFactorA = 1.30623447;
+    private double penaltyRatioThresholdFactorB = 0.09321777;
     private double penaltyRatioThresholdFactorC = -6.60221445e-02;
 
     private boolean rewardStrategy = true;
     private double rewardFactor = 0.4;
-    private double rewardRatioThreshold = 3.34209421e+00;
-    private double rewardRatioThresholdFactorA = -3.23284824e-06;
-    private double rewardRatioThresholdFactorB = 8.58041740e-04;
+    private RatioCalculator rewardRatioThresholdCalculator = RatioCalculator.exponents;
+    private double rewardRatioThreshold = 3.20481115;
+    private double rewardRatioThresholdFactorA = 2.1103988;
+    private double rewardRatioThresholdFactorB = 0.24493789;
     private double rewardRatioThresholdFactorC = -7.16475576e-02;
 
     private int writeFileInterval = 1;
+
+    static enum RatioCalculator{poly,exponents}
+
+    @StringSetter(PENALTY_RATIO_THRESHOLD_CALCULATOR)
+    public void setPenaltyRatioThresholdCalculator(RatioCalculator penaltyRatioThresholdCalculator) {
+        this.penaltyRatioThresholdCalculator = penaltyRatioThresholdCalculator;
+    }
+    @StringGetter(PENALTY_RATIO_THRESHOLD_CALCULATOR)
+    public RatioCalculator getPenaltyRatioThresholdCalculator() {
+        return penaltyRatioThresholdCalculator;
+    }
+    @StringSetter(REWARD_RATIO_THRESHOLD_CALCULATOR)
+    public void setRewardRatioThresholdCalculator(RatioCalculator rewardRatioThresholdCalculator) {
+        this.rewardRatioThresholdCalculator = rewardRatioThresholdCalculator;
+    }
+    @StringGetter(REWARD_RATIO_THRESHOLD_CALCULATOR)
+    public RatioCalculator getRewardRatioThresholdCalculator() {
+        return rewardRatioThresholdCalculator;
+    }
 
     @StringSetter(WRITE_FILE_INTERVAL)
     public void setWriteFileInterval(int writeFileInterval) { this.writeFileInterval = writeFileInterval; }

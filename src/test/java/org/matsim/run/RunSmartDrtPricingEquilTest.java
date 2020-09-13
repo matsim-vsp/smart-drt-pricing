@@ -18,6 +18,8 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.drtSpeedUp.DrtSpeedUpConfigGroup;
+import org.matsim.drtSpeedUp.MultiModeDrtSpeedUpModule;
 import org.matsim.smartDrtPricing.SmartDRTFareModule;
 import org.matsim.smartDrtPricing.SmartDrtFareConfigGroup;
 import org.matsim.testcases.MatsimTestUtils;
@@ -39,6 +41,10 @@ public class RunSmartDrtPricingEquilTest {
         Scenario scenario = DrtControlerCreator.createScenarioWithDrtRouteFactory(config);
         ScenarioUtils.loadScenario(scenario);
 
+        config.controler().setRunId("test0");
+        config.controler().setOutputDirectory(utils.getOutputDirectory());
+        config.controler().setWriteEventsInterval(1);
+
 
         org.matsim.core.controler.Controler controler = new Controler(scenario);
         controler.addOverridingModule(new MultiModeDrtModule());
@@ -52,6 +58,39 @@ public class RunSmartDrtPricingEquilTest {
 
         ConfigUtils.addOrGetModule(config, SmartDrtFareConfigGroup.class);
         controler.addOverridingModule(new SmartDRTFareModule());
+
+        controler.run();
+    }
+
+    @Test
+    public final void drtSpeedUpTest(){
+        Config config = ConfigUtils.loadConfig("test/input/scenario/equil/config.xml", new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new DrtFaresConfigGroup());
+        SwissRailRaptorConfigGroup swissRailRaptorConfigGroup = ConfigUtils.addOrGetModule(config, SwissRailRaptorConfigGroup.class);
+        swissRailRaptorConfigGroup.setUseIntermodalAccessEgress(false);
+        DrtConfigs.adjustMultiModeDrtConfig(ConfigUtils.addOrGetModule(config,MultiModeDrtConfigGroup.class), config.planCalcScore(), config.plansCalcRoute());
+
+        config.controler().setRunId("drtSpeedUpTest");
+        config.controler().setOutputDirectory(utils.getOutputDirectory());
+        config.controler().setWriteEventsInterval(1);
+
+        Scenario scenario = DrtControlerCreator.createScenarioWithDrtRouteFactory(config);
+        ScenarioUtils.loadScenario(scenario);
+
+
+        org.matsim.core.controler.Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new MultiModeDrtModule());
+        controler.addOverridingModule(new DvrpModule());
+        controler.configureQSimComponents(DvrpQSimComponents.activateAllModes(MultiModeDrtConfigGroup.get(controler.getConfig())));
+        controler.addOverridingModule(new DrtFareModule());
+
+        for( Person person : scenario.getPopulation().getPersons().values() ){
+            person.getPlans().removeIf( (plan) -> plan!=person.getSelectedPlan() ) ;
+        }
+
+//        ConfigUtils.addOrGetModule(config, SmartDrtFareConfigGroup.class);
+//        controler.addOverridingModule(new SmartDRTFareModule());
+        ConfigUtils.addOrGetModule(config, DrtSpeedUpConfigGroup.class);
+        controler.addOverridingModule(new MultiModeDrtSpeedUpModule());
 
         controler.run();
     }
