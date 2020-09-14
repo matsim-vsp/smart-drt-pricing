@@ -38,7 +38,7 @@ public class DrtTripInfo {
         this.realActivityEndEvent = realActivityEndEvent;
     }
 
-    public boolean isLastArrivalEvent() {
+    public boolean needLastArrivalEvent() {
         return this.isDrtTrip() && this.findDrtArrivalEvent;
     }
 
@@ -46,11 +46,15 @@ public class DrtTripInfo {
         return realActivityEndEvent;
     }
 
-    public DrtRequestSubmittedEvent getDrtRequestSubmittedEvent() {
+    public double getUnsharedRideDistance(){
+        return this.getDrtRequestSubmittedEvent().getUnsharedRideDistance();
+    }
+
+    final public DrtRequestSubmittedEvent getDrtRequestSubmittedEvent() {
         return drtRequestSubmittedEvent;
     }
 
-    public void setDrtRequestSubmittedEvent(DrtRequestSubmittedEvent drtRequestSubmittedEvent) {
+    final public void setDrtRequestSubmittedEvent(DrtRequestSubmittedEvent drtRequestSubmittedEvent) {
         this.drtRequestSubmittedEvent = drtRequestSubmittedEvent;
     }
 
@@ -78,12 +82,12 @@ public class DrtTripInfo {
         this.drtArrivalEvent = drtArrivalEvent;
     }
 
-    public double getWalkTime() {
+    final public double getWalkTime() {
         return (drtRequestSubmittedEvent.getTime() - realActivityEndEvent.getTime())
                 + (lastArrivalEvent.getTime() - drtArrivalEvent.getTime());
     }
 
-    public double getTotalUnsharedTripTime() {
+    final public double getTotalUnsharedTripTime() {
         return this.getWalkTime() + this.drtRequestSubmittedEvent.getUnsharedRideTime();
     }
     public double getRealDrtTotalTripTime(){

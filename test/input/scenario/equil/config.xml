@@ -11,6 +11,20 @@
 		<param name="numberOfThreads" value="1" />
 		<param name="randomSeed" value="4711" />
 	</module>
+	<module name="drtSpeedUp" >
+		<param name="firstSimulatedDrtIterationToReplaceInitialDrtPerformanceParams" value="0" />
+		<param name="fractionOfIterationSwitchOn" value="0.0" />
+		<param name="fractionOfIterationsSwitchOff" value="0.99" />
+		<param name="initialBeelineFactorForDrtFare" value="1.5" />
+		<param name="initialInVehicleBeelineSpeed" value="4.16667" />
+		<param name="initialWaitingTime" value="900.0" />
+		<param name="intervalDetailedIteration" value="2" />
+		<param name="modes" value="drt" />
+		<param name="movingAverageSize" value="1" />
+		<param name="numberOfThreadsForMobsimDuringSpeedUp" value="4" />
+		<!-- Possible values: Disabled, LinearRegression -->
+		<param name="waitingTimeUpdateDuringSpeedUp" value="Disabled" />
+	</module>
 	<module name="multiModeDrt">
 		<parameterset type="drt">
 			<parameterset type="ExtensiveInsertionSearch"/>

@@ -28,6 +28,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     public static final String GROUP_NAME = "smartDrtPricing";
     private static final String DRT_MODE = "drtMode";
     private static final String MAX_DRT_DISTANCE = "maxDrtDistance";
+    private static final String SUPPORT_DRT_SPEED_UP = "supportDrtSpeedUp";
 
     private static final String PENALTY_STRATEGY = "penaltyStrategy";
     private static final String PENALTY_FACTOR = "penaltyFactor";
@@ -52,6 +53,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     }
 
     private String drtMode = "drt";
+    private boolean supportDrtSpeedUp = false;
     private double maxDrtDistance = 40000;
 
     private boolean penaltyStrategy = true;
@@ -72,7 +74,16 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
 
     private int writeFileInterval = 1;
 
-    static enum RatioCalculator{poly,exponents}
+    public enum RatioCalculator{poly,exponents}
+
+    @StringSetter(SUPPORT_DRT_SPEED_UP)
+    public void setSupportDrtSpeedUp(boolean supportDrtSpeedUp) {
+        this.supportDrtSpeedUp = supportDrtSpeedUp;
+    }
+    @StringGetter(SUPPORT_DRT_SPEED_UP)
+    public boolean getSupportDrtSpeedUp() {
+        return supportDrtSpeedUp;
+    }
 
     @StringSetter(PENALTY_RATIO_THRESHOLD_CALCULATOR)
     public void setPenaltyRatioThresholdCalculator(RatioCalculator penaltyRatioThresholdCalculator) {

@@ -25,7 +25,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.smartDrtPricing.SmartDRTFareModule;
+import org.matsim.smartDrtPricing.SmartDrtFareModule;
 import org.matsim.smartDrtPricing.SmartDrtFareConfigGroup;
 
 /**
@@ -42,7 +42,7 @@ public class RunExampleSmartDrtPricing {
         Scenario scenario = ScenarioUtils.loadScenario(config);
         // controler
         Controler controler = new Controler(scenario);
-        controler.addOverridingModule(new SmartDRTFareModule());
+        controler.addOverridingModule(new SmartDrtFareModule());
         // run
         controler.run();
     }

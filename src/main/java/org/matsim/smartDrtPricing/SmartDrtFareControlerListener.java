@@ -28,22 +28,21 @@ import org.matsim.core.controler.listener.IterationEndsListener;
 /**
  * @author : zmeng
  */
-public class SmartDRTFareControlerListener implements IterationEndsListener {
+public class SmartDrtFareControlerListener implements IterationEndsListener {
 
     @Inject
     private SmartDrtFareConfigGroup smartDrtFareConfigGroup;
     @Inject
-    private SmartDRTFareComputation smartDRTFareComputation;
+    private SmartDrtFareComputation smartDrtFareComputation;
     @Inject
     private Scenario scenario;
 
     @Override
     public void notifyIterationEnds(IterationEndsEvent iterationEndsEvent) {
-        smartDRTFareComputation.writeLog();
         if(iterationEndsEvent.getIteration() == scenario.getConfig().controler().getLastIteration()){
-            smartDRTFareComputation.writeFile();
+            smartDrtFareComputation.writeFile();
         } else if (iterationEndsEvent.getIteration() % smartDrtFareConfigGroup.getWriteFileInterval() == 0) {
-            smartDRTFareComputation.writeFile();
+            smartDrtFareComputation.writeFile();
         }
     }
 }
