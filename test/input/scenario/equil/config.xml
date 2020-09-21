@@ -68,6 +68,29 @@
 		<!-- Used for ONLINE estimation of travel times for VrpOptimizer by combining WithinDayTravelTime and DvrpOfflineTravelTimeEstimator. The beta coefficient is provided in seconds and should be either 0 (no online estimation) or positive (mixed online-offline estimation). For 'beta = 0', only the offline estimate is used: 'onlineTT(t) = offlineTT(t)', where 'offlineTT(t)' in the offline estimate for TT at time 't', For 'beta > 0', estimating future TTs at time 't', uses the currently observed TT to correct the offline estimates is made: where 'currentTT' is the currently observed TT, and 'correction = min(1, max(0, 1 - (time - currentTime) / beta))' The rule is that correction decreases linearly from 1 (when 'time = currentTime') to 0 (when 'time = currentTime + beta' For 'time > currentTime + beta' correction is 0, whereas if 'time < currentTime' it is 1. If beta is sufficiently large, 'beta >> 0', only the currently observed TT is used. -->
 		<param name="travelTimeEstimationBeta" value="0.0" />
 	</module>
+	<module name="smartDrtPricing" >
+		<param name="drtMode" value="drt" />
+		<param name="maxDrtDistance" value="40000.0" />
+		<param name="penaltyFactor" value="1.0" />
+		<param name="penaltyRatioThreshold" value="0.876805393" />
+		<!-- Possible values: poly, exponents -->
+		<param name="penaltyRatioThresholdCalculator" value="exponents" />
+		<param name="penaltyRatioThresholdFactorA" value="1.659865279" />
+		<param name="penaltyRatioThresholdFactorB" value="0.047588985" />
+		<param name="penaltyRatioThresholdFactorC" value="0.0" />
+		<param name="penaltyStrategy" value="true" />
+		<param name="rewardFactor" value="0.5" />
+		<param name="rewardRatioThreshold" value="2.684251583" />
+		<!-- Possible values: poly, exponents -->
+		<param name="rewardRatioThresholdCalculator" value="exponents" />
+		<param name="rewardRatioThresholdFactorA" value="1.370545094" />
+		<param name="rewardRatioThresholdFactorB" value="0.151154769" />
+		<param name="rewardRatioThresholdFactorC" value="0.0" />
+		<param name="rewardStrategy" value="true" />
+		<param name="supportDrtSpeedUp" value="true" />
+		<param name="writeFileInterval" value="1" />
+	</module>
+
 	<module name="network" >
 		<param name="inputNetworkFile" value="network.xml" />
 	</module>

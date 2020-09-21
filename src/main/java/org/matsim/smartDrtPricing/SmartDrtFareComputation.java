@@ -120,6 +120,10 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
     }
 
     public static void computeFareChange(PersonArrivalEvent event,EstimatePtTrip estimatePtTrip, double baseDistanceFare,SmartDrtFareConfigGroup smartDrtFareConfigGroup, EventsManager events) {
+        estimatePtTrip.setPenalty(0);
+        estimatePtTrip.setPenaltyPerMeter(0);
+        estimatePtTrip.setReward(0);
+        estimatePtTrip.setRewardPerMeter(0);
         if (estimatePtTrip.getRatio() <= estimatePtTrip.getPenaltyRatioThreshold()) {
             // pt is faster than DRT --> add fare penalty
             if (smartDrtFareConfigGroup.hasPenaltyStrategy()) {

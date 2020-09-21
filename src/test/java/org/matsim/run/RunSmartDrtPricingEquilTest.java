@@ -90,17 +90,17 @@ public class RunSmartDrtPricingEquilTest {
         ConfigUtils.addOrGetModule(config, SmartDrtFareConfigGroup.class);
         controler.addOverridingModule(new SmartDrtFareModule());
         SmartDrtFareConfigGroup smartDrtFareConfigGroup = ConfigUtils.addOrGetModule(config,SmartDrtFareConfigGroup.class);
-        smartDrtFareConfigGroup.setSupportDrtSpeedUp(true);
-        smartDrtFareConfigGroup.setPenaltyRatioThresholdCalculator(SmartDrtFareConfigGroup.RatioCalculator.poly);
-        smartDrtFareConfigGroup.setRewardRatioThresholdCalculator(SmartDrtFareConfigGroup.RatioCalculator.poly);
-        smartDrtFareConfigGroup.setPenaltyRatioThreshold(0);
-        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorA(0);
-        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorB(0);
-        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorC(0);
-
-        smartDrtFareConfigGroup.setRewardRatioThreshold(2);
-        smartDrtFareConfigGroup.setRewardRatioThresholdFactorA(0);
-        smartDrtFareConfigGroup.setRewardRatioThresholdFactorB(0);
+//        smartDrtFareConfigGroup.setSupportDrtSpeedUp(true);
+//        smartDrtFareConfigGroup.setPenaltyRatioThresholdCalculator(SmartDrtFareConfigGroup.RatioCalculator.poly);
+//        smartDrtFareConfigGroup.setRewardRatioThresholdCalculator(SmartDrtFareConfigGroup.RatioCalculator.poly);
+//        smartDrtFareConfigGroup.setPenaltyRatioThreshold(0);
+//        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorA(0);
+//        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorB(0);
+//        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorC(0);
+//
+//        smartDrtFareConfigGroup.setRewardRatioThreshold(2);
+//        smartDrtFareConfigGroup.setRewardRatioThresholdFactorA(0);
+//        smartDrtFareConfigGroup.setRewardRatioThresholdFactorB(0);
         smartDrtFareConfigGroup.setRewardRatioThresholdFactorC(0);
 
         ConfigUtils.addOrGetModule(config, DrtSpeedUpConfigGroup.class);
