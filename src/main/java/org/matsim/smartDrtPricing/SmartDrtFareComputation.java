@@ -135,8 +135,12 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
             }
         } else if (estimatePtTrip.getRatio() >= estimatePtTrip.getRewardRatioThreshold()) {
             if (smartDrtFareConfigGroup.hasRewardStrategy()) {
-                double rewardPerMeter = Math.min(smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare,
+/*                double rewardPerMeter = Math.min(smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare,
+                        smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare * (estimatePtTrip.getRatio() / estimatePtTrip.getRewardRatioThreshold() - 1))*/
+
+                double rewardPerMeter = Math.min(smartDrtFareConfigGroup.getDiscountLimitedPct()* baseDistanceFare,
                         smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare * (estimatePtTrip.getRatio() / estimatePtTrip.getRewardRatioThreshold() - 1));
+
                 double reward = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance() * rewardPerMeter;
                 events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), reward));
                 estimatePtTrip.setReward(reward);

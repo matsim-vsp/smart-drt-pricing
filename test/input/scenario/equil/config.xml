@@ -80,11 +80,11 @@
 		<param name="penaltyRatioThresholdFactorC" value="0.0" />
 		<param name="penaltyStrategy" value="true" />
 		<param name="rewardFactor" value="0.5" />
-		<param name="rewardRatioThreshold" value="2.684251583" />
+		<param name="rewardRatioThreshold" value="1" />
 		<!-- Possible values: poly, exponents -->
-		<param name="rewardRatioThresholdCalculator" value="exponents" />
-		<param name="rewardRatioThresholdFactorA" value="1.370545094" />
-		<param name="rewardRatioThresholdFactorB" value="0.151154769" />
+		<param name="rewardRatioThresholdCalculator" value="poly" />
+		<param name="rewardRatioThresholdFactorA" value="0" />
+		<param name="rewardRatioThresholdFactorB" value="0" />
 		<param name="rewardRatioThresholdFactorC" value="0.0" />
 		<param name="rewardStrategy" value="true" />
 		<param name="supportDrtSpeedUp" value="true" />

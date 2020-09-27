@@ -40,6 +40,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
 
     private static final String REWARD_STRATEGY = "rewardStrategy";
     private static final String REWARD_FACTOR = "rewardFactor";
+    private static final String DISCOUNT_LIMITED_PCT = "discountLimitedPct";
     private static final String REWARD_RATIO_THRESHOLD_CALCULATOR = "rewardRatioThresholdCalculator";
     private static final String REWARD_RATIO_THRESHOLD = "rewardRatioThreshold";
     private static final String REWARD_RATIO_THRESHOLD_FACTOR_A = "rewardRatioThresholdFactorA";
@@ -66,6 +67,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
 
     private boolean rewardStrategy = true;
     private double rewardFactor = 0.4;
+    private double discountLimitedPct = 0.5;
     private RatioCalculator rewardRatioThresholdCalculator = RatioCalculator.exponents;
     private double rewardRatioThreshold = 3.20481115;
     private double rewardRatioThresholdFactorA = 2.1103988;
@@ -75,6 +77,11 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     private int writeFileInterval = 1;
 
     public enum RatioCalculator{poly,exponents}
+
+    @StringGetter(DISCOUNT_LIMITED_PCT)
+    public double getDiscountLimitedPct() { return discountLimitedPct; }
+    @StringSetter(DISCOUNT_LIMITED_PCT)
+    public void setDiscountLimitedPct(double discountLimitedPct) { this.discountLimitedPct = discountLimitedPct; }
 
     @StringSetter(SUPPORT_DRT_SPEED_UP)
     public void setSupportDrtSpeedUp(boolean supportDrtSpeedUp) {

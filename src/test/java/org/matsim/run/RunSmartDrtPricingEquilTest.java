@@ -90,18 +90,43 @@ public class RunSmartDrtPricingEquilTest {
         ConfigUtils.addOrGetModule(config, SmartDrtFareConfigGroup.class);
         controler.addOverridingModule(new SmartDrtFareModule());
         SmartDrtFareConfigGroup smartDrtFareConfigGroup = ConfigUtils.addOrGetModule(config,SmartDrtFareConfigGroup.class);
-//        smartDrtFareConfigGroup.setSupportDrtSpeedUp(true);
-//        smartDrtFareConfigGroup.setPenaltyRatioThresholdCalculator(SmartDrtFareConfigGroup.RatioCalculator.poly);
-//        smartDrtFareConfigGroup.setRewardRatioThresholdCalculator(SmartDrtFareConfigGroup.RatioCalculator.poly);
-//        smartDrtFareConfigGroup.setPenaltyRatioThreshold(0);
-//        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorA(0);
-//        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorB(0);
-//        smartDrtFareConfigGroup.setPenaltyRatioThresholdFactorC(0);
-//
-//        smartDrtFareConfigGroup.setRewardRatioThreshold(2);
-//        smartDrtFareConfigGroup.setRewardRatioThresholdFactorA(0);
-//        smartDrtFareConfigGroup.setRewardRatioThresholdFactorB(0);
-        smartDrtFareConfigGroup.setRewardRatioThresholdFactorC(0);
+
+        ConfigUtils.addOrGetModule(config, DrtSpeedUpConfigGroup.class);
+        controler.addOverridingModule(new MultiModeDrtSpeedUpModule());
+
+        controler.run();
+    }
+
+    @Test
+    public final void rewardComputeTest(){
+        Config config = ConfigUtils.loadConfig("test/input/scenario/equil/config.xml", new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new DrtFaresConfigGroup());
+        SwissRailRaptorConfigGroup swissRailRaptorConfigGroup = ConfigUtils.addOrGetModule(config, SwissRailRaptorConfigGroup.class);
+        swissRailRaptorConfigGroup.setUseIntermodalAccessEgress(false);
+        DrtConfigs.adjustMultiModeDrtConfig(ConfigUtils.addOrGetModule(config,MultiModeDrtConfigGroup.class), config.planCalcScore(), config.plansCalcRoute());
+
+        config.controler().setRunId("rewardComputeTest");
+        config.controler().setOutputDirectory(utils.getOutputDirectory());
+        config.controler().setWriteEventsInterval(1);
+
+        Scenario scenario = DrtControlerCreator.createScenarioWithDrtRouteFactory(config);
+        ScenarioUtils.loadScenario(scenario);
+
+
+        org.matsim.core.controler.Controler controler = new Controler(scenario);
+        controler.addOverridingModule(new MultiModeDrtModule());
+        controler.addOverridingModule(new DvrpModule());
+        controler.configureQSimComponents(DvrpQSimComponents.activateAllModes(MultiModeDrtConfigGroup.get(controler.getConfig())));
+        controler.addOverridingModule(new DrtFareModule());
+
+        for( Person person : scenario.getPopulation().getPersons().values() ){
+            person.getPlans().removeIf( (plan) -> plan!=person.getSelectedPlan() ) ;
+        }
+
+        ConfigUtils.addOrGetModule(config, SmartDrtFareConfigGroup.class);
+        controler.addOverridingModule(new SmartDrtFareModule());
+        SmartDrtFareConfigGroup smartDrtFareConfigGroup = ConfigUtils.addOrGetModule(config,SmartDrtFareConfigGroup.class);
+        smartDrtFareConfigGroup.setDiscountLimitedPct(0.1);
+        smartDrtFareConfigGroup.setRewardFactor(200);
 
         ConfigUtils.addOrGetModule(config, DrtSpeedUpConfigGroup.class);
         controler.addOverridingModule(new MultiModeDrtSpeedUpModule());
