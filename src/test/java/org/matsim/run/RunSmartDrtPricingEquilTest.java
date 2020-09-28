@@ -28,6 +28,7 @@ import org.matsim.testcases.MatsimTestUtils;
  * @author : zmeng
  */
 public class RunSmartDrtPricingEquilTest {
+    //todo: rewrite the test
     @Rule
     public MatsimTestUtils utils = new MatsimTestUtils();
 

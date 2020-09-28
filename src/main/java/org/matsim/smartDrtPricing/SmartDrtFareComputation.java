@@ -124,28 +124,20 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
         estimatePtTrip.setPenaltyPerMeter(0);
         estimatePtTrip.setReward(0);
         estimatePtTrip.setRewardPerMeter(0);
-        if (estimatePtTrip.getRatio() <= estimatePtTrip.getPenaltyRatioThreshold()) {
-            // pt is faster than DRT --> add fare penalty
-            if (smartDrtFareConfigGroup.hasPenaltyStrategy()) {
+        if (smartDrtFareConfigGroup.hasPenaltyStrategy() && estimatePtTrip.getRatio() <= estimatePtTrip.getPenaltyRatioThreshold()) {
                 double penaltyPerMeter = smartDrtFareConfigGroup.getPenaltyFactor() * baseDistanceFare * estimatePtTrip.getPenaltyRatioThreshold() / estimatePtTrip.getRatio() - baseDistanceFare;
                 double penalty = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance() * penaltyPerMeter;
                 events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), -penalty));
                 estimatePtTrip.setPenaltyPerMeter(penaltyPerMeter);
                 estimatePtTrip.setPenalty(penalty);
-            }
-        } else if (estimatePtTrip.getRatio() >= estimatePtTrip.getRewardRatioThreshold()) {
-            if (smartDrtFareConfigGroup.hasRewardStrategy()) {
-/*                double rewardPerMeter = Math.min(smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare,
-                        smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare * (estimatePtTrip.getRatio() / estimatePtTrip.getRewardRatioThreshold() - 1))*/
-
+        }
+        if (smartDrtFareConfigGroup.hasRewardStrategy() && estimatePtTrip.getRatio() >= estimatePtTrip.getRewardRatioThreshold()) {
                 double rewardPerMeter = Math.min(smartDrtFareConfigGroup.getDiscountLimitedPct()* baseDistanceFare,
                         smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare * (estimatePtTrip.getRatio() / estimatePtTrip.getRewardRatioThreshold() - 1));
-
                 double reward = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance() * rewardPerMeter;
                 events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), reward));
                 estimatePtTrip.setReward(reward);
                 estimatePtTrip.setRewardPerMeter(rewardPerMeter);
-            }
         }
     }
 
