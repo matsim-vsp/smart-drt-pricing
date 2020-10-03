@@ -47,8 +47,8 @@ public class EstimatePtTrip {
     private double reward;
     private double rewardPerMeter;
     private double ratio;
-    private double penaltyRatioThreshold;
-    private double rewardRatioThreshold;
+    private Threshold penaltyRatioThreshold;
+    private Threshold rewardRatioThreshold;
     private DrtTripInfo drtTripInfo;
 
 
@@ -183,13 +183,13 @@ public class EstimatePtTrip {
 
     public double getRatio() { return this.ratio;}
 
-    public void setPenaltyRatioThreshold(double penaltyRatioThreshold) {this.penaltyRatioThreshold = penaltyRatioThreshold;}
+    public void setPenaltyRatioThreshold(Threshold penaltyRatioThreshold) {this.penaltyRatioThreshold = penaltyRatioThreshold;}
 
-    public double getPenaltyRatioThreshold() { return penaltyRatioThreshold; }
+    public Threshold getPenaltyRatioThreshold() { return penaltyRatioThreshold; }
 
-    public double getRewardRatioThreshold() { return rewardRatioThreshold; }
+    public Threshold getRewardRatioThreshold() { return rewardRatioThreshold; }
 
-    public void setRewardRatioThreshold(double rewardRatioThreshold) { this.rewardRatioThreshold = rewardRatioThreshold; }
+    public void setRewardRatioThreshold(Threshold rewardRatioThreshold) { this.rewardRatioThreshold = rewardRatioThreshold; }
 
     public double getReward() { return reward; }
 

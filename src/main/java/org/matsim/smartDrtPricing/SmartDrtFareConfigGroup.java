@@ -60,19 +60,19 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     private boolean penaltyStrategy = true;
     private double penaltyFactor = 1;
     private RatioCalculator penaltyRatioThresholdCalculator = RatioCalculator.exponents;
-    private double penaltyRatioThreshold = 1.85544918;
-    private double penaltyRatioThresholdFactorA = 1.30623447;
-    private double penaltyRatioThresholdFactorB = 0.09321777;
-    private double penaltyRatioThresholdFactorC = -6.60221445e-02;
+    private String penaltyRatioThreshold = "1,2";
+    private String penaltyRatioThresholdFactorA = "1,2";
+    private String penaltyRatioThresholdFactorB = "1,2";
+    private String penaltyRatioThresholdFactorC = "1,2";
 
     private boolean rewardStrategy = true;
     private double rewardFactor = 0.4;
     private double discountLimitedPct = 0.5;
     private RatioCalculator rewardRatioThresholdCalculator = RatioCalculator.exponents;
-    private double rewardRatioThreshold = 3.20481115;
-    private double rewardRatioThresholdFactorA = 2.1103988;
-    private double rewardRatioThresholdFactorB = 0.24493789;
-    private double rewardRatioThresholdFactorC = -7.16475576e-02;
+    private String rewardRatioThreshold = "1,2";
+    private String rewardRatioThresholdFactorA = "1,2";
+    private String rewardRatioThresholdFactorB = "1,2";
+    private String rewardRatioThresholdFactorC = "1,2";
 
     private int writeFileInterval = 1;
 
@@ -136,41 +136,41 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     @StringSetter(PENALTY_FACTOR)
     public void setPenaltyFactor(double penaltyFactor) { this.penaltyFactor = penaltyFactor; }
     @StringGetter(PENALTY_RATIO_THRESHOLD)
-    public double getPenaltyRatioThreshold() { return penaltyRatioThreshold; }
+    public String getPenaltyRatioThreshold() { return penaltyRatioThreshold; }
     @StringSetter(PENALTY_RATIO_THRESHOLD)
-    public void setPenaltyRatioThreshold(double penaltyRatioThreshold) { this.penaltyRatioThreshold = penaltyRatioThreshold; }
+    public void setPenaltyRatioThreshold(String penaltyRatioThreshold) { this.penaltyRatioThreshold = penaltyRatioThreshold; }
     @StringGetter(PENALTY_RATIO_THRESHOLD_FACTOR_A)
-    public double getPenaltyRatioThresholdFactorA() { return penaltyRatioThresholdFactorA; }
+    public String getPenaltyRatioThresholdFactorA() { return penaltyRatioThresholdFactorA; }
     @StringSetter(PENALTY_RATIO_THRESHOLD_FACTOR_A)
-    public void setPenaltyRatioThresholdFactorA(double penaltyRatioThresholdFactorA) { this.penaltyRatioThresholdFactorA = penaltyRatioThresholdFactorA; }
+    public void setPenaltyRatioThresholdFactorA(String penaltyRatioThresholdFactorA) { this.penaltyRatioThresholdFactorA = penaltyRatioThresholdFactorA; }
     @StringGetter(PENALTY_RATIO_THRESHOLD_FACTOR_B)
-    public double getPenaltyRatioThresholdFactorB() { return penaltyRatioThresholdFactorB; }
+    public String getPenaltyRatioThresholdFactorB() { return penaltyRatioThresholdFactorB; }
     @StringSetter(PENALTY_RATIO_THRESHOLD_FACTOR_B)
-    public void setPenaltyRatioThresholdFactorB(double penaltyRatioThresholdFactorB) { this.penaltyRatioThresholdFactorB = penaltyRatioThresholdFactorB; }
+    public void setPenaltyRatioThresholdFactorB(String penaltyRatioThresholdFactorB) { this.penaltyRatioThresholdFactorB = penaltyRatioThresholdFactorB; }
     @StringGetter(PENALTY_RATIO_THRESHOLD_FACTOR_C)
-    public double getPenaltyRatioThresholdFactorC() { return penaltyRatioThresholdFactorC; }
+    public String getPenaltyRatioThresholdFactorC() { return penaltyRatioThresholdFactorC; }
     @StringSetter(PENALTY_RATIO_THRESHOLD_FACTOR_C)
-    public void setPenaltyRatioThresholdFactorC(double penaltyRatioThresholdFactorC) { this.penaltyRatioThresholdFactorC = penaltyRatioThresholdFactorC; }
+    public void setPenaltyRatioThresholdFactorC(String penaltyRatioThresholdFactorC) { this.penaltyRatioThresholdFactorC = penaltyRatioThresholdFactorC; }
 
     @StringGetter(REWARD_FACTOR)
     public double getRewardFactor() { return rewardFactor; }
     @StringSetter(REWARD_FACTOR)
     public void setRewardFactor(double rewardFactor) { this.rewardFactor = rewardFactor; }
     @StringGetter(REWARD_RATIO_THRESHOLD)
-    public double getRewardRatioThreshold() { return rewardRatioThreshold; }
+    public String getRewardRatioThreshold() { return rewardRatioThreshold; }
     @StringSetter(REWARD_RATIO_THRESHOLD)
-    public void setRewardRatioThreshold(double rewardRatioThreshold) { this.rewardRatioThreshold = rewardRatioThreshold; }
+    public void setRewardRatioThreshold(String rewardRatioThreshold) { this.rewardRatioThreshold = rewardRatioThreshold; }
     @StringGetter(REWARD_RATIO_THRESHOLD_FACTOR_A)
-    public double getRewardRatioThresholdFactorA() { return rewardRatioThresholdFactorA; }
+    public String getRewardRatioThresholdFactorA() { return rewardRatioThresholdFactorA; }
     @StringSetter(REWARD_RATIO_THRESHOLD_FACTOR_A)
-    public void setRewardRatioThresholdFactorA(double rewardRatioThresholdFactorA) { this.rewardRatioThresholdFactorA = rewardRatioThresholdFactorA; }
+    public void setRewardRatioThresholdFactorA(String rewardRatioThresholdFactorA) { this.rewardRatioThresholdFactorA = rewardRatioThresholdFactorA; }
     @StringGetter(REWARD_RATIO_THRESHOLD_FACTOR_B)
-    public double getRewardRatioThresholdFactorB() { return rewardRatioThresholdFactorB; }
+    public String getRewardRatioThresholdFactorB() { return rewardRatioThresholdFactorB; }
     @StringSetter(REWARD_RATIO_THRESHOLD_FACTOR_B)
-    public void setRewardRatioThresholdFactorB(double rewardRatioThresholdFactorB) { this.rewardRatioThresholdFactorB = rewardRatioThresholdFactorB; }
+    public void setRewardRatioThresholdFactorB(String rewardRatioThresholdFactorB) { this.rewardRatioThresholdFactorB = rewardRatioThresholdFactorB; }
     @StringGetter(REWARD_RATIO_THRESHOLD_FACTOR_C)
-    public double getRewardRatioThresholdFactorC() { return rewardRatioThresholdFactorC; }
+    public String getRewardRatioThresholdFactorC() { return rewardRatioThresholdFactorC; }
     @StringSetter(REWARD_RATIO_THRESHOLD_FACTOR_C)
-    public void setRewardRatioThresholdFactorC(double rewardRatioThresholdFactorC) { this.rewardRatioThresholdFactorC = rewardRatioThresholdFactorC; }
+    public void setRewardRatioThresholdFactorC(String rewardRatioThresholdFactorC) { this.rewardRatioThresholdFactorC = rewardRatioThresholdFactorC; }
 
 }

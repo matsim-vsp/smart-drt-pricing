@@ -40,6 +40,7 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.TripRouter;
 import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
 import org.matsim.smartDrtPricing.prepare.DrtTripInfo;
+import org.matsim.smartDrtPricing.prepare.Threshold;
 import org.matsim.smartDrtPricing.ratioThreshold.Penalty;
 import org.matsim.smartDrtPricing.ratioThreshold.Reward;
 import org.matsim.smartDrtPricing.ratioThreshold.RatioThresholdCalculator;
@@ -48,10 +49,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -80,20 +78,12 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
     private Map<Id<Person>, DrtTripInfo> personId2drtTripInfoCollector = new HashMap<>();
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTrips = new HashMap<>();
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTripsCurrentIt = new HashMap<>();
-    private int newCalculatedNumOfPtTrips= 0;
-    private int numOfHasPenaltyDrtUsers = 0;
-    private int numOfHasRewardDrtUsers = 0;
-    private int totalDrtUsers = 0;
 
     @Override
     public void reset(int iteration) {
         this.currentIteration = iteration;
         personId2drtTripInfoCollector.clear();
         personId2estimatePtTripsCurrentIt.clear();
-        newCalculatedNumOfPtTrips = 0;
-        numOfHasPenaltyDrtUsers = 0;
-        numOfHasRewardDrtUsers = 0;
-        totalDrtUsers = 0;
     }
 
     @Override
@@ -105,7 +95,6 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
                 drtTrip.setFindDrtArrivalEvent(true);
                 drtTrip.setDrtArrivalEvent(event);
             } else if (drtTrip.needLastArrivalEvent()) {
-                totalDrtUsers++;
                 EstimatePtTrip estimatePtTrip = SmartDrtFareComputation.computePtTravelTime(event, drtTrip, this.personId2estimatePtTrips, scenario,tripRouter,penaltyRatioThresholdCalculator,rewardRatioThresholdCalculator,smartDrtFareConfigGroup);
                 double baseDistanceFare = this.drtFaresConfigGroup.getDrtFareConfigGroups().stream().filter(drtFareConfigGroup -> drtFareConfigGroup.getMode().equals(smartDrtFareConfigGroup.getDrtMode())).collect(Collectors.toList()).get(0).getDistanceFare_m();
                 computeFareChange(event,estimatePtTrip, baseDistanceFare,smartDrtFareConfigGroup,events);
@@ -124,16 +113,16 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
         estimatePtTrip.setPenaltyPerMeter(0);
         estimatePtTrip.setReward(0);
         estimatePtTrip.setRewardPerMeter(0);
-        if (smartDrtFareConfigGroup.hasPenaltyStrategy() && estimatePtTrip.getRatio() <= estimatePtTrip.getPenaltyRatioThreshold()) {
-                double penaltyPerMeter = smartDrtFareConfigGroup.getPenaltyFactor() * baseDistanceFare * estimatePtTrip.getPenaltyRatioThreshold() / estimatePtTrip.getRatio() - baseDistanceFare;
+        if (smartDrtFareConfigGroup.hasPenaltyStrategy() && estimatePtTrip.getRatio() <= estimatePtTrip.getPenaltyRatioThreshold().getUpperLimit() && estimatePtTrip.getRatio() >= estimatePtTrip.getPenaltyRatioThreshold().getLowerLimit()) {
+                double penaltyPerMeter = smartDrtFareConfigGroup.getPenaltyFactor() * baseDistanceFare * estimatePtTrip.getPenaltyRatioThreshold().getUpperLimit() / estimatePtTrip.getRatio() - baseDistanceFare;
                 double penalty = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance() * penaltyPerMeter;
                 events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), -penalty));
                 estimatePtTrip.setPenaltyPerMeter(penaltyPerMeter);
                 estimatePtTrip.setPenalty(penalty);
         }
-        if (smartDrtFareConfigGroup.hasRewardStrategy() && estimatePtTrip.getRatio() >= estimatePtTrip.getRewardRatioThreshold()) {
+        if (smartDrtFareConfigGroup.hasRewardStrategy() && estimatePtTrip.getRatio() >= estimatePtTrip.getRewardRatioThreshold().getLowerLimit() && estimatePtTrip.getRatio() <= estimatePtTrip.getRewardRatioThreshold().getUpperLimit()) {
                 double rewardPerMeter = Math.min(smartDrtFareConfigGroup.getDiscountLimitedPct()* baseDistanceFare,
-                        smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare * (estimatePtTrip.getRatio() / estimatePtTrip.getRewardRatioThreshold() - 1));
+                        smartDrtFareConfigGroup.getRewardFactor() * baseDistanceFare * (estimatePtTrip.getRatio() / estimatePtTrip.getRewardRatioThreshold().getLowerLimit() - 1));
                 double reward = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance() * rewardPerMeter;
                 events.processEvent(new PersonMoneyEvent(event.getTime(), event.getPersonId(), reward));
                 estimatePtTrip.setReward(reward);
@@ -170,23 +159,47 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
     }
 
     private static void computeRatio(DrtTripInfo drtTrip, EstimatePtTrip estimatePtTrip, RatioThresholdCalculator penaltyRatioThresholdCalculator, RatioThresholdCalculator rewardRatioThresholdCalculator, SmartDrtFareConfigGroup smartDrtFareConfigGroup) {
+
         double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getRealDrtTotalTripTime();
         estimatePtTrip.setRatio(ratio);
+        double dis = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance();
+        Threshold.Builder penaltyThresholdBuilder = new Threshold.Builder();
+        Threshold.Builder rewardThresholdBuilder = new Threshold.Builder();
 
-        double penaltyRatioThreshold = penaltyRatioThresholdCalculator.calculateRatioThreshold(estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance(),
-                smartDrtFareConfigGroup.getPenaltyRatioThreshold(),
-                smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorA(),
-                smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorB(),
-                smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorC());
+        if(smartDrtFareConfigGroup.getPenaltyRatioThreshold().contains(",")){
+            double[] penaltyThreshold = Arrays.stream(smartDrtFareConfigGroup.getPenaltyRatioThreshold().split(",")).mapToDouble(Double::parseDouble).toArray();
+            double[] a =  Arrays.stream(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorA().split(",")).mapToDouble(Double::parseDouble).toArray();
+            double[] b =  Arrays.stream(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorB().split(",")).mapToDouble(Double::parseDouble).toArray();
+            double[] c =  Arrays.stream(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorC().split(",")).mapToDouble(Double::parseDouble).toArray();
 
-        double rewardRatioThreshold = rewardRatioThresholdCalculator.calculateRatioThreshold(estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance(),
-                smartDrtFareConfigGroup.getRewardRatioThreshold(),
-                smartDrtFareConfigGroup.getRewardRatioThresholdFactorA(),
-                smartDrtFareConfigGroup.getRewardRatioThresholdFactorB(),
-                smartDrtFareConfigGroup.getRewardRatioThresholdFactorC());
+            penaltyThresholdBuilder.setLowerLimit(penaltyRatioThresholdCalculator.calculateRatioThreshold(dis,penaltyThreshold[0],a[0],b[0],c[0])).
+            setUpperLimit(penaltyRatioThresholdCalculator.calculateRatioThreshold(dis,penaltyThreshold[1],a[1],b[1],c[1]));
+        } else {
+            double penaltyThreshold = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThreshold());
+            double a = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorA());
+            double b = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorB());
+            double c = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorC());
+            penaltyThresholdBuilder.setUpperLimit(penaltyRatioThresholdCalculator.calculateRatioThreshold(dis,penaltyThreshold,a,b,c));
+        }
 
-        estimatePtTrip.setPenaltyRatioThreshold(penaltyRatioThreshold);
-        estimatePtTrip.setRewardRatioThreshold(rewardRatioThreshold);
+        if(smartDrtFareConfigGroup.getRewardRatioThreshold().contains(",")){
+            double[] rewardThreshold = Arrays.stream(smartDrtFareConfigGroup.getRewardRatioThreshold().split(",")).mapToDouble(Double::parseDouble).toArray();
+            double[] a =  Arrays.stream(smartDrtFareConfigGroup.getRewardRatioThresholdFactorA().split(",")).mapToDouble(Double::parseDouble).toArray();
+            double[] b =  Arrays.stream(smartDrtFareConfigGroup.getRewardRatioThresholdFactorB().split(",")).mapToDouble(Double::parseDouble).toArray();
+            double[] c =  Arrays.stream(smartDrtFareConfigGroup.getRewardRatioThresholdFactorC().split(",")).mapToDouble(Double::parseDouble).toArray();
+
+            rewardThresholdBuilder.setLowerLimit(rewardRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold[0],a[0],b[0],c[0])).
+                    setUpperLimit(penaltyRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold[1],a[1],b[1],c[1]));
+        } else {
+            double rewardThreshold = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThreshold());
+            double a = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorA());
+            double b = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorB());
+            double c = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorC());
+            rewardThresholdBuilder.setLowerLimit(penaltyRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold,a,b,c));
+        }
+
+        estimatePtTrip.setPenaltyRatioThreshold(penaltyThresholdBuilder.build());
+        estimatePtTrip.setRewardRatioThreshold(rewardThresholdBuilder.build());
     }
 
     @Override
