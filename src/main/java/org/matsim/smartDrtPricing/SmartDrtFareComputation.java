@@ -195,13 +195,13 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
             double[] c =  Arrays.stream(smartDrtFareConfigGroup.getRewardRatioThresholdFactorC().split(",")).mapToDouble(Double::parseDouble).toArray();
 
             rewardThresholdBuilder.setLowerLimit(rewardRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold[0],a[0],b[0],c[0])).
-                    setUpperLimit(penaltyRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold[1],a[1],b[1],c[1]));
+                    setUpperLimit(rewardRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold[1],a[1],b[1],c[1]));
         } else {
-            double rewardThreshold = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThreshold());
-            double a = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorA());
-            double b = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorB());
-            double c = Double.parseDouble(smartDrtFareConfigGroup.getPenaltyRatioThresholdFactorC());
-            rewardThresholdBuilder.setLowerLimit(penaltyRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold,a,b,c));
+            double rewardThreshold = Double.parseDouble(smartDrtFareConfigGroup.getRewardRatioThreshold());
+            double a = Double.parseDouble(smartDrtFareConfigGroup.getRewardRatioThresholdFactorA());
+            double b = Double.parseDouble(smartDrtFareConfigGroup.getRewardRatioThresholdFactorB());
+            double c = Double.parseDouble(smartDrtFareConfigGroup.getRewardRatioThresholdFactorC());
+            rewardThresholdBuilder.setLowerLimit(rewardRatioThresholdCalculator.calculateRatioThreshold(dis,rewardThreshold,a,b,c));
         }
 
         estimatePtTrip.setPenaltyRatioThreshold(penaltyThresholdBuilder.build());
