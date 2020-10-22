@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.controler.events.IterationEndsEvent;
 
+import java.io.IOException;
+
 /**
  * @author zmeng
  */
@@ -21,11 +23,27 @@ public class SmartTeleportDrtFareControlerListener  extends  SmartDrtFareControl
     public void notifyIterationEnds(IterationEndsEvent iterationEndsEvent) {
 
         if(iterationEndsEvent.getIteration() == scenario.getConfig().controler().getLastIteration()){
-            smartDrtFareComputation.writeFile();
-            smartTeleportDrtFareComputation.writeFile();
+            try {
+                smartDrtFareComputation.writeFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                smartTeleportDrtFareComputation.writeFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else if (iterationEndsEvent.getIteration() % smartDrtFareConfigGroup.getWriteFileInterval() == 0) {
-            smartDrtFareComputation.writeFile();
-            smartTeleportDrtFareComputation.writeFile();
+            try {
+                smartDrtFareComputation.writeFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                smartTeleportDrtFareComputation.writeFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

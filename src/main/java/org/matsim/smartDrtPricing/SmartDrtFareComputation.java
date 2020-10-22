@@ -20,6 +20,7 @@
 package org.matsim.smartDrtPricing;
 
 import com.google.inject.Inject;
+import com.graphhopper.jsprit.core.problem.solution.route.activity.DeliverService;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -49,6 +50,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,6 +80,7 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
     private int currentIteration;
     private BufferedWriter bw = null;
     private Map<Id<Person>, DrtTripInfo> personId2drtTripInfoCollector = new HashMap<>();
+    private Map<Id<Person>, Integer> personId2tripNum = new HashMap<>();
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTrips = new HashMap<>();
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTripsCurrentIt = new HashMap<>();
 
@@ -84,6 +89,7 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
         this.currentIteration = iteration;
         personId2drtTripInfoCollector.clear();
         personId2estimatePtTripsCurrentIt.clear();
+        personId2tripNum.clear();
     }
 
     @Override
@@ -215,30 +221,43 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
     @Override
     public void handleEvent(ActivityEndEvent event) {
         // this is a real person
-        if (scenario.getPopulation().getPersons().containsKey(event.getPersonId())) {
+        Id<Person> personId = event.getPersonId();
+
+        if (scenario.getPopulation().getPersons().containsKey(personId)) {
             // store real activity_end time, regardless if this agent will use drt
             if (!event.getActType().contains("interaction")) {
-                this.personId2drtTripInfoCollector.put(event.getPersonId(), new DrtTripInfo(event));
+                if (this.personId2tripNum.containsKey(personId))
+                    this.personId2tripNum.put(personId,this.personId2tripNum.get(personId) + 1);
+                else
+                    this.personId2tripNum.put(personId, 1);
+                this.personId2drtTripInfoCollector.put(personId, new DrtTripInfo(event,this.personId2tripNum.get(personId)));
             }
+
         }
     }
 
-    public void writeFile(){
+    public void writeFile() throws IOException {
         if(this.personId2estimatePtTripsCurrentIt.size() > 0){
             String runOutputDirectory = this.scenario.getConfig().controler().getOutputDirectory();
             if (!runOutputDirectory.endsWith("/")) runOutputDirectory = runOutputDirectory.concat("/");
 
-            String fileName = runOutputDirectory + "ITERS/it." + currentIteration + "/" + this.scenario.getConfig().controler().getRunId() + "." + currentIteration + ".info_" + this.getClass().getName() + ".csv";
+            Path smartDrtPricingFolder = Paths.get(runOutputDirectory + "smartDrtPricing/");
+
+            if(!smartDrtPricingFolder.toFile().mkdirs())
+                Files.createDirectories(smartDrtPricingFolder);
+
+            String fileName = runOutputDirectory + "smartDrtPricing/" + this.scenario.getConfig().controler().getRunId() + "." + currentIteration + ".info_" + this.getClass().getName() + ".csv";
             File file = new File(fileName);
 
             try {
                 bw = new BufferedWriter(new FileWriter(file));
-                bw.write("it,personId,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
+                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
                 for (Id<Person> personId : this.personId2estimatePtTripsCurrentIt.keySet()) {
                     for(EstimatePtTrip estimatePtTrip : this.personId2estimatePtTripsCurrentIt.get(personId)){
                         bw.newLine();
                         bw.write(this.currentIteration + "," +
                                 personId + "," +
+                                estimatePtTrip.getDrtTripInfo().getTripNum() + "," +
                                 estimatePtTrip.getDepartureLinkId() + "," +
                                 estimatePtTrip.getArrivalLinkId() + "," +
                                 estimatePtTrip.getDepartureTime() + "," +

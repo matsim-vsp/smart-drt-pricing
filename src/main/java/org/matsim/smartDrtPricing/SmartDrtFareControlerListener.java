@@ -25,6 +25,8 @@ import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.listener.IterationEndsListener;
 
+import java.io.IOException;
+
 /**
  * @author : zmeng
  */
@@ -40,9 +42,17 @@ public class SmartDrtFareControlerListener implements IterationEndsListener {
     @Override
     public void notifyIterationEnds(IterationEndsEvent iterationEndsEvent) {
         if(iterationEndsEvent.getIteration() == scenario.getConfig().controler().getLastIteration()){
-            smartDrtFareComputation.writeFile();
+            try {
+                smartDrtFareComputation.writeFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else if (iterationEndsEvent.getIteration() % smartDrtFareConfigGroup.getWriteFileInterval() == 0) {
-            smartDrtFareComputation.writeFile();
+            try {
+                smartDrtFareComputation.writeFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

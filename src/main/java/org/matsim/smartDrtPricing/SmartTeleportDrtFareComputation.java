@@ -16,6 +16,7 @@ import org.matsim.contrib.dvrp.run.DvrpModes;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.TripRouter;
 import org.matsim.drtSpeedUp.DrtSpeedUp;
+import org.matsim.smartDrtPricing.prepare.DrtTripInfo;
 import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
 import org.matsim.smartDrtPricing.prepare.TeleportDrtTripInfo;
 import org.matsim.smartDrtPricing.ratioThreshold.Penalty;
@@ -26,6 +27,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +64,7 @@ public class SmartTeleportDrtFareComputation implements ActivityEndEventHandler,
     private Map<Id<Person>, TeleportDrtTripInfo> personId2drtTripInfoCollector = new HashMap<>();
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTrips = new HashMap<>();
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTripsCurrentIt = new HashMap<>();
+    private Map<Id<Person>,Integer> personId2tripNum = new HashMap<>();
 
     @Override
     public void reset(int iteration) {
@@ -67,6 +72,7 @@ public class SmartTeleportDrtFareComputation implements ActivityEndEventHandler,
         personId2drtTripInfoCollector.clear();
         personId2estimatePtTripsCurrentIt.clear();
         it2BeelineFactorForDrtFare.put(currentIteration,injector.getInstance(DvrpModes.key(DrtSpeedUp.class, "drt")).getCurrentBeelineFactorForDrtFare());
+        personId2tripNum.clear();
     }
 
     @Override
@@ -106,30 +112,42 @@ public class SmartTeleportDrtFareComputation implements ActivityEndEventHandler,
 
     @Override
     public void handleEvent(ActivityEndEvent event) {
-        // this is a real person
-        if (scenario.getPopulation().getPersons().containsKey(event.getPersonId())) {
+
+        Id<Person> personId = event.getPersonId();
+
+        if (scenario.getPopulation().getPersons().containsKey(personId)) {
             // store real activity_end time, regardless if this agent will use drt
             if (!event.getActType().contains("interaction")) {
-                this.personId2drtTripInfoCollector.put(event.getPersonId(), new TeleportDrtTripInfo(event, this.it2BeelineFactorForDrtFare.get(this.currentIteration), scenario));
+                if (this.personId2tripNum.containsKey(personId))
+                    this.personId2tripNum.put(personId,this.personId2tripNum.get(personId) + 1);
+                else
+                    this.personId2tripNum.put(personId, 1);
+                this.personId2drtTripInfoCollector.put(event.getPersonId(), new TeleportDrtTripInfo(event, this.personId2tripNum.get(personId),this.it2BeelineFactorForDrtFare.get(this.currentIteration), scenario));
             }
         }
     }
-    public void writeFile(){
+    public void writeFile() throws IOException {
         if(this.personId2estimatePtTripsCurrentIt.size() > 0) {
             String runOutputDirectory = this.scenario.getConfig().controler().getOutputDirectory();
             if (!runOutputDirectory.endsWith("/")) runOutputDirectory = runOutputDirectory.concat("/");
 
-            String fileName = runOutputDirectory + "ITERS/it." + currentIteration + "/" + this.scenario.getConfig().controler().getRunId() + "." + currentIteration + ".info_" + this.getClass().getName() + ".csv";
+            Path smartDrtPricingFolder = Paths.get(runOutputDirectory + "smartDrtPricing/");
+
+            if(!smartDrtPricingFolder.toFile().mkdirs())
+                Files.createDirectories(smartDrtPricingFolder);
+
+            String fileName = runOutputDirectory + "smartDrtPricing/" + this.scenario.getConfig().controler().getRunId() + "." + currentIteration + ".info_" + this.getClass().getName() + ".csv";
             File file = new File(fileName);
 
             try {
                 bw = new BufferedWriter(new FileWriter(file));
-                bw.write("it,personId,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
+                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
                 for (Id<Person> personId : this.personId2estimatePtTripsCurrentIt.keySet()) {
                     for(EstimatePtTrip estimatePtTrip : this.personId2estimatePtTripsCurrentIt.get(personId)){
                         bw.newLine();
                         bw.write(this.currentIteration + "," +
                                 personId + "," +
+                                estimatePtTrip.getDrtTripInfo().getTripNum() + "," +
                                 estimatePtTrip.getDepartureLinkId() + "," +
                                 estimatePtTrip.getArrivalLinkId() + "," +
                                 estimatePtTrip.getDepartureTime() + "," +

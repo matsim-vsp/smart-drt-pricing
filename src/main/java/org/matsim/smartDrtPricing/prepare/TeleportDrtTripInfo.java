@@ -18,8 +18,9 @@ public class TeleportDrtTripInfo extends DrtTripInfo{
     private double beelineDrtDistanceWithFactor;
     private double unsharedRideDistance;
     private final double beelineDrtDistanceFactor;
-    public TeleportDrtTripInfo(ActivityEndEvent realActivityEndEvent, double beelineDrtDistanceFactor, Scenario scenario) {
-        super(realActivityEndEvent);
+
+    public TeleportDrtTripInfo(ActivityEndEvent realActivityEndEvent, int tripNum, double beelineDrtDistanceFactor, Scenario scenario) {
+        super(realActivityEndEvent,tripNum);
         this.beelineDrtDistanceFactor = beelineDrtDistanceFactor;
         this.scenario = scenario;
     }
