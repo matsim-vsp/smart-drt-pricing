@@ -141,7 +141,7 @@ public class SmartTeleportDrtFareComputation implements ActivityEndEventHandler,
 
             try {
                 bw = new BufferedWriter(new FileWriter(file));
-                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
+                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimateCarTime,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
                 for (Id<Person> personId : this.personId2estimatePtTripsCurrentIt.keySet()) {
                     for(EstimatePtTrip estimatePtTrip : this.personId2estimatePtTripsCurrentIt.get(personId)){
                         bw.newLine();
@@ -155,6 +155,7 @@ public class SmartTeleportDrtFareComputation implements ActivityEndEventHandler,
                                 estimatePtTrip.getDrtTripInfo().getRealDrtTotalTripTime() + "," +
                                 "-" + "," +
                                 estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance() + "," +
+                                estimatePtTrip.getDrtTripInfo().getEstimateCarTravelTime() + "," +
                                 estimatePtTrip.getPtTravelTime() + "," +
                                 estimatePtTrip.getRatio() + "," +
                                 estimatePtTrip.getPenaltyPerMeter() + "," +

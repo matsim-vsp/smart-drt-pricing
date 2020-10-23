@@ -33,11 +33,20 @@ public class DrtTripInfo {
     private PersonArrivalEvent lastArrivalEvent;
     private boolean isDrtTrip = false;
     private boolean findDrtArrivalEvent = false;
+    private double estimateCarTravelTime;
     private int tripNum;
 
     public DrtTripInfo(ActivityEndEvent realActivityEndEvent, int tripNum) {
         this.realActivityEndEvent = realActivityEndEvent;
         this.tripNum = tripNum;
+    }
+
+    public void setEstimateCarTravelTime(double estimateCarTravelTime) {
+        this.estimateCarTravelTime = estimateCarTravelTime;
+    }
+
+    public double getEstimateCarTravelTime() {
+        return estimateCarTravelTime;
     }
 
     public void setTripNum(int tripNum) {

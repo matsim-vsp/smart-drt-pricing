@@ -158,6 +158,12 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
             double ptTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime()).sum();
             estimatePtTrip.setPtTravelTime(ptTravelTime);
         }
+
+        //add car travel time
+        List<? extends PlanElement> planElements = tripRouter.calcRoute(TransportMode.car, estimatePtTrip.getDepartureFacility(), estimatePtTrip.getArrivalFacility(), estimatePtTrip.getDepartureTime(), scenario.getPopulation().getPersons().get(event.getPersonId()));
+        double carTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime()).sum();
+        drtTrip.setEstimateCarTravelTime(carTravelTime);
+
         estimatePtTrip.setDrtTripInfo(drtTrip);
         computeRatio(drtTrip, estimatePtTrip,penaltyRatioThresholdCalculator,rewardRatioThresholdCalculator,smartDrtFareConfigGroup);
 
@@ -166,7 +172,9 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
 
     private static void computeRatio(DrtTripInfo drtTrip, EstimatePtTrip estimatePtTrip, RatioThresholdCalculator penaltyRatioThresholdCalculator, RatioThresholdCalculator rewardRatioThresholdCalculator, SmartDrtFareConfigGroup smartDrtFareConfigGroup) {
 
-        double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getRealDrtTotalTripTime();
+        //double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getRealDrtTotalTripTime();
+        double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getEstimateCarTravelTime();
+
         estimatePtTrip.setRatio(ratio);
         double dis = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance();
         Threshold.Builder penaltyThresholdBuilder = new Threshold.Builder();
@@ -251,7 +259,7 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
 
             try {
                 bw = new BufferedWriter(new FileWriter(file));
-                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
+                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,unsharedDrtTime,unsharedDrtDistance,EstimateCarTime,EstimatePtTime,ratio,penalty_meter,penalty,penaltyRatioThreshold,reward_meter,reward,rewardRatioThreshold");
                 for (Id<Person> personId : this.personId2estimatePtTripsCurrentIt.keySet()) {
                     for(EstimatePtTrip estimatePtTrip : this.personId2estimatePtTripsCurrentIt.get(personId)){
                         bw.newLine();
@@ -265,6 +273,7 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
                                 estimatePtTrip.getDrtTripInfo().getRealDrtTotalTripTime() + "," +
                                 estimatePtTrip.getDrtTripInfo().getTotalUnsharedTripTime() + "," +
                                 estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance() + "," +
+                                estimatePtTrip.getDrtTripInfo().getEstimateCarTravelTime() + "," +
                                 estimatePtTrip.getPtTravelTime() + "," +
                                 estimatePtTrip.getRatio() + "," +
                                 estimatePtTrip.getPenaltyPerMeter() + "," +
