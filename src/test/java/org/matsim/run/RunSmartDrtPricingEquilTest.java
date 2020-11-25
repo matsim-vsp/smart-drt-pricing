@@ -134,4 +134,21 @@ public class RunSmartDrtPricingEquilTest {
 
         controler.run();
     }
+
+    @Test
+    public final void Test() {
+        Config config = ConfigUtils.loadConfig("test/input/scenario/equil/config.xml", new MultiModeDrtConfigGroup(), new DvrpConfigGroup(), new DrtFaresConfigGroup());
+        SwissRailRaptorConfigGroup swissRailRaptorConfigGroup = ConfigUtils.addOrGetModule(config, SwissRailRaptorConfigGroup.class);
+        swissRailRaptorConfigGroup.setUseIntermodalAccessEgress(false);
+        DrtConfigs.adjustMultiModeDrtConfig(ConfigUtils.addOrGetModule(config, MultiModeDrtConfigGroup.class), config.planCalcScore(), config.plansCalcRoute());
+
+        config.controler().setRunId("rewardComputeTest");
+        config.controler().setOutputDirectory(utils.getOutputDirectory());
+        config.controler().setWriteEventsInterval(1);
+
+        Scenario scenario = DrtControlerCreator.createScenarioWithDrtRouteFactory(config);
+        ScenarioUtils.loadScenario(scenario);
+
+
+    }
 }
