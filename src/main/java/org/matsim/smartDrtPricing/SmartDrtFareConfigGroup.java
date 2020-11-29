@@ -28,7 +28,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     public static final String GROUP_NAME = "smartDrtPricing";
     private static final String DRT_MODE = "drtMode";
     private static final String MAX_DRT_DISTANCE = "maxDrtDistance";
-    private static final String SUPPORT_DRT_SPEED_UP = "supportDrtSpeedUp";
+    private static final String BASE_DISTANCE_FARE = "baseDistanceFare";
 
     private static final String PENALTY_STRATEGY = "penaltyStrategy";
     private static final String PENALTY_FACTOR = "penaltyFactor";
@@ -54,10 +54,10 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     }
 
     private String drtMode = "drt";
-    private boolean supportDrtSpeedUp = false;
     private double maxDrtDistance = 40000;
+    private double baseDistanceFare = 0.35/1000;
 
-    private boolean penaltyStrategy = true;
+    private boolean penaltyStrategy = false;
     private double penaltyFactor = 1;
     private RatioCalculator penaltyRatioThresholdCalculator = RatioCalculator.exponents;
     private String penaltyRatioThreshold = "1,2";
@@ -65,7 +65,7 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     private String penaltyRatioThresholdFactorB = "1,2";
     private String penaltyRatioThresholdFactorC = "1,2";
 
-    private boolean rewardStrategy = true;
+    private boolean rewardStrategy = false;
     private double rewardFactor = 0.4;
     private double discountLimitedPct = 0.5;
     private RatioCalculator rewardRatioThresholdCalculator = RatioCalculator.exponents;
@@ -82,14 +82,13 @@ public class SmartDrtFareConfigGroup extends ReflectiveConfigGroup {
     public double getDiscountLimitedPct() { return discountLimitedPct; }
     @StringSetter(DISCOUNT_LIMITED_PCT)
     public void setDiscountLimitedPct(double discountLimitedPct) { this.discountLimitedPct = discountLimitedPct; }
-
-    @StringSetter(SUPPORT_DRT_SPEED_UP)
-    public void setSupportDrtSpeedUp(boolean supportDrtSpeedUp) {
-        this.supportDrtSpeedUp = supportDrtSpeedUp;
+    @StringGetter(BASE_DISTANCE_FARE)
+    public double getBaseDistanceFare() {
+        return baseDistanceFare;
     }
-    @StringGetter(SUPPORT_DRT_SPEED_UP)
-    public boolean getSupportDrtSpeedUp() {
-        return supportDrtSpeedUp;
+    @StringSetter(BASE_DISTANCE_FARE)
+    public void setBaseDistanceFare(double baseDistanceFare) {
+        this.baseDistanceFare = baseDistanceFare;
     }
 
     @StringSetter(PENALTY_RATIO_THRESHOLD_CALCULATOR)

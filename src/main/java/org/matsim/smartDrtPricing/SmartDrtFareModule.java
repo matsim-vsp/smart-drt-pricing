@@ -46,13 +46,7 @@ public class SmartDrtFareModule extends AbstractModule {
         }
 
         addEventHandlerBinding().to(SmartDrtFareComputation.class);
+        addControlerListenerBinding().to(SmartDrtFareControlerListener.class);
 
-        if(this.smartDrtFareConfigGroup.getSupportDrtSpeedUp()){
-            this.bind(SmartTeleportDrtFareComputation.class).asEagerSingleton();
-            addEventHandlerBinding().to(SmartTeleportDrtFareComputation.class);
-            addControlerListenerBinding().to(SmartTeleportDrtFareControlerListener.class);
-        } else {
-            addControlerListenerBinding().to(SmartDrtFareControlerListener.class);
-        }
     }
 }

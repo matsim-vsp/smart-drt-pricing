@@ -20,7 +20,6 @@
 package org.matsim.smartDrtPricing;
 
 import com.google.inject.Inject;
-import com.graphhopper.jsprit.core.problem.solution.route.activity.DeliverService;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -34,17 +33,16 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.contrib.av.robotaxi.fares.drt.DrtFaresConfigGroup;
 import org.matsim.contrib.drt.passenger.events.DrtRequestSubmittedEvent;
 import org.matsim.contrib.drt.passenger.events.DrtRequestSubmittedEventHandler;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.TripRouter;
-import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
 import org.matsim.smartDrtPricing.prepare.DrtTripInfo;
+import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
 import org.matsim.smartDrtPricing.prepare.Threshold;
 import org.matsim.smartDrtPricing.ratioThreshold.Penalty;
-import org.matsim.smartDrtPricing.ratioThreshold.Reward;
 import org.matsim.smartDrtPricing.ratioThreshold.RatioThresholdCalculator;
+import org.matsim.smartDrtPricing.ratioThreshold.Reward;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,7 +52,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author ikaddoura zmeng
@@ -70,8 +67,6 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
     private TripRouter tripRouter;
     @Inject
     private SmartDrtFareConfigGroup smartDrtFareConfigGroup;
-    @Inject
-    private DrtFaresConfigGroup drtFaresConfigGroup;
     @Inject @Penalty
     private RatioThresholdCalculator penaltyRatioThresholdCalculator;
     @Inject @Reward
@@ -102,7 +97,8 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
                 drtTrip.setDrtArrivalEvent(event);
             } else if (drtTrip.needLastArrivalEvent()) {
                 EstimatePtTrip estimatePtTrip = SmartDrtFareComputation.computePtTravelTime(event, drtTrip, this.personId2estimatePtTrips, scenario,tripRouter,penaltyRatioThresholdCalculator,rewardRatioThresholdCalculator,smartDrtFareConfigGroup);
-                double baseDistanceFare = this.drtFaresConfigGroup.getDrtFareConfigGroups().stream().filter(drtFareConfigGroup -> drtFareConfigGroup.getMode().equals(smartDrtFareConfigGroup.getDrtMode())).collect(Collectors.toList()).get(0).getDistanceFare_m();
+                //double baseDistanceFare = this.drtFaresConfigGroup.getDrtFareConfigGroups().stream().filter(drtFareConfigGroup -> drtFareConfigGroup.getMode().equals(smartDrtFareConfigGroup.getDrtMode())).collect(Collectors.toList()).get(0).getDistanceFare_m();
+                double baseDistanceFare = smartDrtFareConfigGroup.getBaseDistanceFare();
                 computeFareChange(event,estimatePtTrip, baseDistanceFare,smartDrtFareConfigGroup,events);
                 if (!this.personId2estimatePtTripsCurrentIt.containsKey(event.getPersonId())) {
                     this.personId2estimatePtTripsCurrentIt.put(event.getPersonId(), new LinkedList<>());
@@ -155,13 +151,13 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
         if (!estimatePtTrip.isHasPtTravelTime()) {
             estimatePtTrip.setHasPtTravelTime(true);
             List<? extends PlanElement> planElements = tripRouter.calcRoute(TransportMode.pt, estimatePtTrip.getDepartureFacility(), estimatePtTrip.getArrivalFacility(), estimatePtTrip.getDepartureTime(), scenario.getPopulation().getPersons().get(event.getPersonId()));
-            double ptTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime()).sum();
+            double ptTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime().seconds()).sum();
             estimatePtTrip.setPtTravelTime(ptTravelTime);
         }
 
         //add car travel time
         List<? extends PlanElement> planElements = tripRouter.calcRoute(TransportMode.car, estimatePtTrip.getDepartureFacility(), estimatePtTrip.getArrivalFacility(), estimatePtTrip.getDepartureTime(), scenario.getPopulation().getPersons().get(event.getPersonId()));
-        double carTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime()).sum();
+        double carTravelTime = planElements.stream().filter(planElement -> (planElement instanceof Leg)).mapToDouble(planElement -> ((Leg) planElement).getTravelTime().seconds()).sum();
         drtTrip.setEstimateCarTravelTime(carTravelTime);
 
         estimatePtTrip.setDrtTripInfo(drtTrip);
@@ -172,8 +168,8 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
 
     private static void computeRatio(DrtTripInfo drtTrip, EstimatePtTrip estimatePtTrip, RatioThresholdCalculator penaltyRatioThresholdCalculator, RatioThresholdCalculator rewardRatioThresholdCalculator, SmartDrtFareConfigGroup smartDrtFareConfigGroup) {
 
-        //double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getRealDrtTotalTripTime();
-        double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getEstimateCarTravelTime();
+        double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getRealDrtTotalTripTime();
+        //double ratio = estimatePtTrip.getPtTravelTime() / drtTrip.getEstimateCarTravelTime();
 
         estimatePtTrip.setRatio(ratio);
         double dis = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance();
@@ -249,7 +245,7 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
             String runOutputDirectory = this.scenario.getConfig().controler().getOutputDirectory();
             if (!runOutputDirectory.endsWith("/")) runOutputDirectory = runOutputDirectory.concat("/");
 
-            Path smartDrtPricingFolder = Paths.get(runOutputDirectory + "smartDrtPricing/");
+            Path smartDrtPricingFolder = Paths.get(runOutputDirectory + "smartDrtPricing/"); //
 
             if(!smartDrtPricingFolder.toFile().mkdirs())
                 Files.createDirectories(smartDrtPricingFolder);
