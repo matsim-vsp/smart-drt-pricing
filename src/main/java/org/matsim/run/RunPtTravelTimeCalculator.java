@@ -17,10 +17,15 @@ import org.matsim.core.scenario.ScenarioByInstanceModule;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.run.drt.RunDrtOpenBerlinScenario;
 import org.matsim.smartDrtPricing.SmartDrtFareConfigGroup;
+import org.matsim.smartDrtPricing.prepare.EstimatePtTravelTimeEventHandler;
 
 import java.io.IOException;
 
 /**
+ * this is a post-processing tool for calculation of estimated public transit travel time after a MATSim simulation run.
+ * args[0] is the config file which is used to configure the simulation
+ * args[1] output_events file obtained after the simulation
+ * args[2] output directory used to store the result: estimated pt travel time for each drt trip.
  * @author zmeng
  */
 public class RunPtTravelTimeCalculator {
@@ -53,13 +58,13 @@ public class RunPtTravelTimeCalculator {
         TripRouter tripRouter = injector.getInstance(TripRouter.class);
 
         EventsManager eventManager = EventsUtils.createEventsManager();
-        RunPtTravelTimeEventHandler runPtTravelTimeEventHandler = new RunPtTravelTimeEventHandler(scenario, tripRouter);
-        eventManager.addHandler(runPtTravelTimeEventHandler);
+        EstimatePtTravelTimeEventHandler estimatePtTravelTimeEventHandler = new EstimatePtTravelTimeEventHandler(scenario, tripRouter);
+        eventManager.addHandler(estimatePtTravelTimeEventHandler);
         eventManager.initProcessing();
         (new MatsimEventsReader(eventManager)).readFile(args[1]);
         eventManager.finishProcessing();
 
-        runPtTravelTimeEventHandler.writeFile(args[2]);
+        estimatePtTravelTimeEventHandler.writeFile(args[2]);
 
     }
 }

@@ -1,4 +1,4 @@
-package org.matsim.run;
+package org.matsim.smartDrtPricing.prepare;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -12,8 +12,6 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.router.TripRouter;
-import org.matsim.smartDrtPricing.prepare.DrtTripInfo;
-import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,7 +28,7 @@ import java.util.Map;
 /**
  * @author zmeng
  */
-public class RunPtTravelTimeEventHandler implements PersonArrivalEventHandler, ActivityEndEventHandler {
+public class EstimatePtTravelTimeEventHandler implements PersonArrivalEventHandler, ActivityEndEventHandler {
 
     private Scenario scenario;
     private TripRouter tripRouter;
@@ -40,7 +38,7 @@ public class RunPtTravelTimeEventHandler implements PersonArrivalEventHandler, A
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTrips = new HashMap<>();
     private Map<Id<Person>, List<EstimatePtTrip>> personId2estimatePtTripsCurrentIt = new HashMap<>();
 
-    public RunPtTravelTimeEventHandler(Scenario scenario, TripRouter tripRouter) {
+    public EstimatePtTravelTimeEventHandler(Scenario scenario, TripRouter tripRouter) {
         this.scenario = scenario;
         this.tripRouter = tripRouter;
     }
