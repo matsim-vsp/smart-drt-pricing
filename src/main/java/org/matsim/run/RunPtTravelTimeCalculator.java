@@ -30,12 +30,15 @@ import java.io.IOException;
  */
 public class RunPtTravelTimeCalculator {
     public static void main(String[] args) throws IOException {
-        args = new String[]{
-          "test/input/scenario/equil/runTest_sdp.output_config.xml", //config
-          "/Users/meng/IdeaProjects/smart-drt-pricing/test/output/org/matsim/run/runSdpEquilTest/runTest_2/runTest_sdp.output_events.xml.gz",
-          "test/output/org/matsim/run/runSdpEquilTest/runTest_2/sdp"
 
-        };
+        if (args.length == 0){
+            args = new String[]{
+                    "test/input/scenario/equil/runTest_sdp.output_config.xml", //config
+                    "/Users/meng/IdeaProjects/smart-drt-pricing/test/output/org/matsim/run/runSdpEquilTest/runTest_2/runTest_sdp.output_events.xml.gz", // output events File
+                    "test/output/org/matsim/run/runSdpEquilTest/runTest_2/sdp"
+
+            };
+        }
 
         Config config = RunDrtOpenBerlinScenario.prepareConfig(new String[]{args[0]}, new SmartDrtFareConfigGroup());
 
