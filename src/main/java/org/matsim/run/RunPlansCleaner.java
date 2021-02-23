@@ -17,9 +17,9 @@ public class RunPlansCleaner {
     public static void main(String[] args) {
 
         if(args.length == 0){
-            args = new String[]{"/Users/meng/work/smart-drt-pricing-paper/open-berlin-scenario/run_sdp_0/output/sdp-0.output_config_reduced.xml",
-                    "/Users/meng/work/smart-drt-pricing-paper/open-berlin-scenario/run_sdp_0/output/sdp-0.output_plans.xml.gz",
-                    "/Users/meng/work/smart-drt-pricing-paper/open-berlin-scenario/run_sdp_0/output/sdp-0.output_plans-1.xml.gz"
+            args = new String[]{"/Users/meng/IdeaProjects/smart-drt-pricing/test/input/scenario/equil/runTest_sdp.output_config.xml",
+                    "/Users/meng/IdeaProjects/smart-drt-pricing/test/output/org/matsim/run/runSdpEquilTest/runTest_2/runTest_sdp.output_plans.xml.gz",
+                    "/Users/meng/IdeaProjects/smart-drt-pricing/test/output/org/matsim/run/runSdpEquilTest/runTest_2/runTest_sdp.output_plans3.xml.gz"
             };
         }
         Config config = ConfigUtils.loadConfig(args[0]);
@@ -34,8 +34,9 @@ public class RunPlansCleaner {
                 if (planElement instanceof Leg) {
                     Leg leg = (Leg) planElement;
                     if (leg.getMode() == "drt") {
-                        String routeDescription = leg.getRoute().getRouteDescription();
-                        leg.getRoute().setRouteDescription(replaceOptionalTime(routeDescription));
+                        //String routeDescription = leg.getRoute().getRouteDescription();
+                        leg.setRoute(null);
+                        //leg.getRoute().setRouteDescription(replaceOptionalTime(routeDescription));
                     }
                 }
             });

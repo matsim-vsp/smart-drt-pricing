@@ -3,7 +3,7 @@ package org.matsim.smartDrtPricing.ratioThreshold;
 import static java.lang.Math.E;
 
 /**
- * threshold = a * e^(-b * x) + c
+ * threshold = constant + a * e^(-b * x)
  * @author zmeng
  */
 public class NegativeExponentsRatioThresholdCalculator implements RatioThresholdCalculator{

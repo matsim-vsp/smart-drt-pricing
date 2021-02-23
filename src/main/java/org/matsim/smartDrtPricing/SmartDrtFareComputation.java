@@ -38,6 +38,7 @@ import org.matsim.contrib.drt.passenger.events.DrtRequestSubmittedEvent;
 import org.matsim.contrib.drt.passenger.events.DrtRequestSubmittedEventHandler;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.router.TripRouter;
+import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.smartDrtPricing.prepare.DrtTripInfo;
 import org.matsim.smartDrtPricing.prepare.EstimatePtTrip;
@@ -175,11 +176,7 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
 
         estimatePtTrip.setRatio(ratio);
         //double dis = estimatePtTrip.getDrtTripInfo().getUnsharedRideDistance();
-        Id<Link> departureLinkId = estimatePtTrip.getDepartureLinkId();
-        Id<Link> arrivalLinkId = estimatePtTrip.getArrivalLinkId();
-        Coord dCoord = scenario.getNetwork().getLinks().get(departureLinkId).getCoord();
-        Coord aCoord = scenario.getNetwork().getLinks().get(arrivalLinkId).getCoord();
-        double dis = CoordUtils.calcEuclideanDistance(dCoord, aCoord);
+        double dis = getDis(this.scenario,estimatePtTrip);
 
         Threshold.Builder penaltyThresholdBuilder = new Threshold.Builder();
         Threshold.Builder rewardThresholdBuilder = new Threshold.Builder();
@@ -219,6 +216,15 @@ public class SmartDrtFareComputation implements DrtRequestSubmittedEventHandler,
 
         estimatePtTrip.setPenaltyRatioThreshold(penaltyThresholdBuilder.build());
         estimatePtTrip.setRewardRatioThreshold(rewardThresholdBuilder.build());
+    }
+
+    public static double getDis(Scenario scenario,EstimatePtTrip estimatePtTrip) {
+        Id<Link> departureLinkId = estimatePtTrip.getDepartureLinkId();
+        Id<Link> arrivalLinkId = estimatePtTrip.getArrivalLinkId();
+        Coord dCoord = scenario.getNetwork().getLinks().get(departureLinkId).getCoord();
+        Coord aCoord = scenario.getNetwork().getLinks().get(arrivalLinkId).getCoord();
+        double dis = CoordUtils.calcEuclideanDistance(dCoord, aCoord);
+        return dis;
     }
 
     @Override

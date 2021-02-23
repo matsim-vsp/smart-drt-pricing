@@ -51,6 +51,6 @@ public class RunOpenBerlinScenarioWithSdp {
         //add sdp module
         controler.addOverridingModule(new SmartDrtFareModule());
 
-        controler.run() ;
+        controler.run();
     }
 }

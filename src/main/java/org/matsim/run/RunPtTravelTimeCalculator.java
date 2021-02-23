@@ -3,6 +3,7 @@ package org.matsim.run;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
@@ -29,6 +30,8 @@ import java.io.IOException;
  * @author zmeng
  */
 public class RunPtTravelTimeCalculator {
+    private static final Logger log = Logger.getLogger(RunPtTravelTimeCalculator.class);
+
     public static void main(String[] args) throws IOException {
 
         if (args.length == 0){
@@ -66,8 +69,8 @@ public class RunPtTravelTimeCalculator {
         eventManager.initProcessing();
         (new MatsimEventsReader(eventManager)).readFile(args[1]);
         eventManager.finishProcessing();
-
+        log.info("write results to" + args[2]);
         estimatePtTravelTimeEventHandler.writeFile(args[2]);
-
+        log.info("finish");
     }
 }

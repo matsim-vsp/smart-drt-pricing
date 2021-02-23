@@ -12,6 +12,7 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.router.TripRouter;
+import org.matsim.smartDrtPricing.SmartDrtFareComputation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -127,7 +128,7 @@ public class EstimatePtTravelTimeEventHandler implements PersonArrivalEventHandl
 
             try {
                 bw = new BufferedWriter(new FileWriter(file));
-                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,EstimatePtTime,ratio");
+                bw.write("it,personId,tripNum,departureLink,arrivalLink,departureTime,arrivalTime,drtTravelTime,EstimatePtTime,ratio,beelineTravelDistance");
                 for (Id<Person> personId : this.personId2estimatePtTripsCurrentIt.keySet()) {
                     for(EstimatePtTrip estimatePtTrip : this.personId2estimatePtTripsCurrentIt.get(personId)){
                         bw.newLine();
@@ -140,7 +141,8 @@ public class EstimatePtTravelTimeEventHandler implements PersonArrivalEventHandl
                                 estimatePtTrip.getDrtTripInfo().getLastArrivalEvent().getTime() + "," +
                                 estimatePtTrip.getDrtTripInfo().getRealDrtTotalTripTime() + "," +
                                 estimatePtTrip.getPtTravelTime() + "," +
-                                estimatePtTrip.getRatio());
+                                estimatePtTrip.getRatio()+ "," +
+                                SmartDrtFareComputation.getDis(scenario,estimatePtTrip));
                     }
                 }
                 bw.close();
